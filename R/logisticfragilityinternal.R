@@ -50,7 +50,7 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level=0.95)
         fragility.index <- fragility.index + 1
       }
       # Case 2: Beta < 0 --> switch 0s to 1s
-      if(model.beta>0){
+      if(model.beta<0){
         y0[sample(which(y0==0), size=1)] <- 1
         m0 <- glm.fit(x=x0, y=y0, family=binomial())
         model.pval <- glmfit2table(m0, covariate)$pval
