@@ -34,11 +34,10 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level=0.95)
 
   if(dim(table(y0))!=2){stop('Need a binary outcome')}
 
+  fragility.index <- 0
   m0 <- glm.fit(x=x0, y=y0, family=binomial())
   model.beta <- glmfit2table(m0, covariate)$beta
   model.pval <- glmfit2table(m0, covariate)$pval
-
-  fragility.index <- 0
 
   if(model.pval>alpha){ # If covariate is not significant to start...
     return(list(index=fragility.index))
@@ -60,9 +59,13 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level=0.95)
         fragility.index <- fragility.index + 1
       }
     }
-
-  }
+    }
   return(list(index=fragility.index))
 }
 
+
+
+#logisticfragilityinternal(admit ~ gpa + gre + rank, data = mydata, covariate="all")
+logisticfragilityinternal(admit ~ gpa + gre + rank, data = mydata, covariate="gre")
+logisticfragilityinternal(admit ~ gpa + gre + rank, data = mydata, covariate="gpa")
 
