@@ -38,10 +38,15 @@ revfragility.index <- function(intervention_event, control_event, intervention_n
   alpha <- (1 - conf.level)
 
   mat <- matrix(c(intervention_event, control_event, intervention_n-intervention_event, control_n-control_event),nrow=2)
+  if(print.mat==TRUE){ print(mat) }
   fragility.index <- 0
 
   test <- fisher.test(mat)
   test2 <- chisq.test(mat)
+
+  # Cells with 0 give Chi-square test a problem; if this is the case,
+  # then just use the fisher test p-value
+  if(is.na(test2$p.value)){test2$p.value <- test$p.value}
 
   if(verbose==FALSE){
     if(test$p.value<alpha | test2$p.value<alpha){
@@ -57,7 +62,7 @@ revfragility.index <- function(intervention_event, control_event, intervention_n
         }
 
         intervention_event = intervention_event + 1
-
+        if(print.mat==TRUE){ print(mat) }
         mat <- matrix(c(intervention_event, control_event, intervention_n-intervention_event, control_n-control_event),nrow=2)
         if(print.mat==TRUE){ print(mat) }
         test <- fisher.test(mat)
@@ -83,7 +88,7 @@ revfragility.index <- function(intervention_event, control_event, intervention_n
       while(test$p.value > alpha){
         fragility.index <- fragility.index + 1
 
-        if(control_event>0){ # cannot have negative events
+        if(control_event>1){ # cannot have negative events
           control_event = control_event - 1
         }
 
@@ -101,3 +106,4 @@ revfragility.index <- function(intervention_event, control_event, intervention_n
   outdf$p.value <- round(outdf$p.value, digits=3)
   return(outdf)
 }
+
