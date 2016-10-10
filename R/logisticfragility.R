@@ -4,12 +4,16 @@
 #' @param formula Model formula which will be evaluated by glm()
 #' @param data Dataframe with values for model forma, passed to glm()
 #' @param covariate Covariate name (string) whose fragility you would like to test
-#' @param conf.level Significance level, set by default to 95%
+#' @param niter Number of iterations of algorithm to run
+#' @param conf.level Significance level, set by default to 95\%
+#' @param plot Should a histogram of results be plotted?
 #'
 #' @importFrom stats glm.fit
 #' @importFrom stats model.frame
 #' @importFrom stats model.matrix
 #' @importFrom stats model.response
+#' @importFrom graphics hist
+#'
 #' @examples
 #' mydata <- read.csv("http://www.ats.ucla.edu/stat/data/binary.csv")
 #' mydata$rank <- factor(mydata$rank)
@@ -20,8 +24,8 @@
 #' @export logisticfragility
 
 
-logisticfragility <- function(formula, data, covariate, niter, plot=FALSE){
-  res <- replicate(niter, logisticfragilityinternal(formula=formula, data=data, covariate=covariate)$index)
+logisticfragility <- function(formula, data, covariate, niter, conf.level=0.95, plot=FALSE){
+  res <- replicate(niter, logisticfragilityinternal(formula=formula, data=data, covariate=covariate, conf.level=conf.level)$index)
   if(plot==TRUE){hist(res, ylab="Count",xlab="Fragility Index",main="")}
   mean.fragility <- mean(res)
   return(index=mean.fragility)

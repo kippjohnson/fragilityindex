@@ -4,16 +4,21 @@
 \alias{logisticfragility}
 \title{Logistic fragility function}
 \usage{
-logisticfragility(formula, data, covariate, niter)
+logisticfragility(formula, data, covariate, niter, conf.level = 0.95,
+  plot = FALSE)
 }
 \arguments{
 \item{formula}{Model formula which will be evaluated by glm()}
 
 \item{data}{Dataframe with values for model forma, passed to glm()}
 
-\item{covariate}{Covarite name (string) whose fragility you would like to test}
+\item{covariate}{Covariate name (string) whose fragility you would like to test}
 
-\item{conf.level}{Significance level, set by default to 95%}
+\item{niter}{Number of iterations of algorithm to run}
+
+\item{conf.level}{Significance level, set by default to 95\%}
+
+\item{plot}{Should a histogram of results be plotted?}
 }
 \value{
 Returns the fragility index for a single run

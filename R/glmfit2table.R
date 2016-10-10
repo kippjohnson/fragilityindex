@@ -8,6 +8,8 @@
 #' @importFrom stats model.frame
 #' @importFrom stats model.matrix
 #' @importFrom stats model.response
+#' @importFrom stats pt
+
 #' @return Returns a given coefficent's beta and p value
 #'
 #' @export glmfit2table

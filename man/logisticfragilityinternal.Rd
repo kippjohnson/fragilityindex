@@ -13,7 +13,7 @@ logisticfragilityinternal(formula, data, covariate, conf.level = 0.95)
 
 \item{covariate}{Covarite name (string) whose fragility you would like to test}
 
-\item{conf.level}{Significance level, set by default to 95%}
+\item{conf.level}{Significance level, set by default to 95\%}
 }
 \value{
 Returns the fragility index for a single run
