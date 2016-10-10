@@ -20,9 +20,9 @@
 #' @export logisticfragility
 
 
-logisticfragility <- function(formula, data, covariate, niter){
-  res <- replicate(niter, logisticfragilityinternal(formula, data=data, covariate=covariate)$index)
-  #hist(res)
+logisticfragility <- function(formula, data, covariate, niter, plot=FALSE){
+  res <- replicate(niter, logisticfragilityinternal(formula=formula, data=data, covariate=covariate)$index)
+  if(plot==TRUE){hist(res, ylab="Count",xlab="Fragility Index",main="")}
   mean.fragility <- mean(res)
   return(index=mean.fragility)
 }
