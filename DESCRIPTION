@@ -10,7 +10,6 @@ Description: Implements the fragility index calculation for
     <DOI:10.1016/j.jclinepi.2013.10.019>.
 License: AGPL-3
 Imports:
-    stats
-    pbapply
+    stats pbapply
 LazyData: TRUE
 RoxygenNote: 5.0.1.9000
