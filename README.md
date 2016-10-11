@@ -3,7 +3,58 @@ Kipp Johnson
 
 ## Repository for the R Package Fragility Index
 
-Implements the fragility index calculation as described in Walsh M, Srinathan SK, McAuley DF, et al. The statistical significance of randomized controlled trial results is frequently fragile: a case for a Fragility Index. Journal of clinical epidemiology. 67(6):622-8. 2014.
+Implements the fragility index calculation as described in Walsh M, Srinathan SK, McAuley DF, et al. _The statistical significance of randomized controlled trial results is frequently fragile: a case for a Fragility Index_. Journal of clinical epidemiology. 67(6):622-8. 2014.
+
+## Introduction
+
+As originally defined, the fragility index is the number of patients with a different outcome it would require to change a result from significant to non-significant. Consider for example the following example situation: In a clinical trial, there are two groups of patients. In group 1, 15/40 patients have an adverse event. In group 2, 5/40 patients have the adverse event. We can test this for statistical significance in the following way:
+
+```
+> mat1 <- matrix(c(15,5,25,35), nrow=2)
+> mat1
+     [,1] [,2]
+[1,]   15   25
+[2,]    5   35
+> fisher.test(mat1)$p.value
+[1] 0.01877238
+```
+
+However, what if we move a single patient from Group 1 to Group 2?
+
+```
+> mat2 <- matrix(c(14,6,26,34), nrow=2)
+> mat2
+     [,1] [,2]
+[1,]   14   26
+[2,]    6   34
+> fisher.test(mat2)$p.value
+[1] 0.06916506
+```
+
+This result is no longer statistically significant at the alpha=0.05 level! This is a "fragile" statistical result, despite the moderately low initial p value. Because it took only a single patient moving from Group 1 to Group 2 to make the result non-significant, we can say this clinical trial has a fragility index of 1. If it had taken two patients with swapped outcomes, it would woul have a fragility index of 2, and so on. 
+
+This package contains functions to automatically calculate fragility indices in several situations, as explained below.
+
+## Installation Instructions
+
+### Installation from github
+
+The most up-to-date version can be installed from this github repository with the following commands:
+
+```
+library(devtools)
+install_github(https://github.com/kippjohnson/fragilityindex)
+library(fragilityindex)
+```
+
+### Installation
+
+Older versions of the package can also be installed from CRAN:
+
+```
+install.packages("fragilityindex")
+library(fragilityindex)
+```
 
 ### Fragility Index
 
