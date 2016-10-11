@@ -57,6 +57,7 @@ library(fragilityindex)
 ```
 
 ## Functions
+=======
 
 ### Fragility Index
 
