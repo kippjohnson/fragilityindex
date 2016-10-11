@@ -22,12 +22,12 @@
 #' mydata$rank <- factor(mydata$rank)
 #' # Suggest much higher value for niter (1000+)
 #' logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="gre", niter=5)
-#' logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="all", niter=5)
+#' logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="all", niter=1000, progress.bar = TRUE)
 #'
 #' @return Returns the fragility index for a single run
 #' @export logisticfragility
 
-logisticfragility <- function(formula, data, covariate, niter, conf.level=0.95, plot=FALSE, progress.bar=FALSE){
+logisticfragility <- function(formula, data, covariate, niter, conf.level=0.95, progress.bar=FALSE){
 
   if(covariate=="all"){
     covariate.names <- colnames(model.matrix(formula, data=data))
@@ -43,18 +43,19 @@ logisticfragility <- function(formula, data, covariate, niter, conf.level=0.95, 
         result.store[i, 1] <- xi
         result.store[i, 2] <- mean(res)
     }
-    colnames(result.store) <- c("coefficient","fragility.index")
+
+  colnames(result.store) <- c("coefficient","fragility.index")
   return(result.store)
+
   }else{
   if(progress.bar==TRUE){
   res <- pbreplicate(niter, logisticfragilityinternal(formula=formula, data=data, covariate=covariate, conf.level=conf.level)$index)
   }else{
   res <- replicate(niter, logisticfragilityinternal(formula=formula, data=data, covariate=covariate, conf.level=conf.level)$index)
     }
-    if(plot==TRUE){hist(res, ylab="Count",xlab="Fragility Index",main="")}
     mean.fragility <- mean(res)
     return(fragility.index=mean.fragility)
   }
 }
 
-#logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="all", niter=10)
+

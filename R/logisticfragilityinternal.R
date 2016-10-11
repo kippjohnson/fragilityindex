@@ -64,8 +64,7 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level=0.95)
 }
 
 
-
 #logisticfragilityinternal(admit ~ gpa + gre + rank, data = mydata, covariate="all")
-logisticfragilityinternal(admit ~ gpa + gre + rank, data = mydata, covariate="gre")
-logisticfragilityinternal(admit ~ gpa + gre + rank, data = mydata, covariate="gpa")
+#logisticfragilityinternal(admit ~ gpa + gre + rank, data = mydata, covariate="gre")
+#logisticfragilityinternal(admit ~ gpa + gre + rank, data = mydata, covariate="gpa")
 
