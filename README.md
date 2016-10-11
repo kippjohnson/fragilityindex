@@ -43,7 +43,7 @@ The most up-to-date version can be installed from this github repository with th
 
 ```
 library(devtools)
-install_github(https://github.com/kippjohnson/fragilityindex)
+install_github('kippjohnson/fragilityindex')
 library(fragilityindex)
 ```
 
