@@ -76,11 +76,42 @@ This package also contains a function to compute the "reverse fragility index," 
 
 ### Logistic Regression Fragility
 
+Examining fragility of a single covariate:
+
 ~~~~
 mydata <- read.csv("http://www.ats.ucla.edu/stat/data/binary.csv")
 mydata$rank <- factor(mydata$rank)
 logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="gre", niter=100)
 ~~~~
+
+Or looking at all covariates in one step:
+
+~~~
+logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="all", niter=100, progress.bar=TRUE)
+~~~
+
+Example output:
+~~~
+[1] "Doing (Intercept)..."
+   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed = 15s
+[1] "Doing gre..."
+   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed = 03s
+[1] "Doing gpa..."
+   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed = 08s
+[1] "Doing rank2..."
+   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed = 05s
+[1] "Doing rank3..."
+   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed = 28s
+[1] "Doing rank4..."
+   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed = 28s
+  coefficient fragility.index
+1 (Intercept)           65.05
+2         gre           11.25
+3         gpa           29.65
+4       rank2           19.02
+5       rank3          120.62
+6       rank4          123.35
+~~~
 
 We present a new method to calculate logistic regression coefficient fragility, or how many events will it take to change a signficiant logistic regression coefficient to non-significant at the given confidence level. To do this, we replace responses (which should be binary events, i.e. 0 or 1) with the opposite event until the event is nonsignificant. If the regression coefficient (beta) is positive, we change a 1 event to a 0. If the regression coefficient is negative, we change a 0 event to a 1. 
 
