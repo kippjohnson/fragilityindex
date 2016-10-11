@@ -5,7 +5,7 @@
 \title{Logistic fragility function}
 \usage{
 logisticfragility(formula, data, covariate, niter, conf.level = 0.95,
-  plot = FALSE)
+  progress.bar = FALSE)
 }
 \arguments{
 \item{formula}{Model formula which will be evaluated by glm()}
@@ -18,7 +18,7 @@ logisticfragility(formula, data, covariate, niter, conf.level = 0.95,
 
 \item{conf.level}{Significance level, set by default to 95\%}
 
-\item{plot}{Should a histogram of results be plotted?}
+\item{progress.bar}{Print a progress bar?}
 }
 \value{
 Returns the fragility index for a single run
@@ -27,10 +27,15 @@ Returns the fragility index for a single run
 Compute the fragility of a coefficient in a logistic regression for dichotomous outcomes. Wrapper function for logisticfragilityinternal
 }
 \examples{
+# Import and format example data
 mydata <- read.csv("http://www.ats.ucla.edu/stat/data/binary.csv")
 mydata$rank <- factor(mydata$rank)
-# Suggest much higher value for niter (1000+)
-logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="gre", niter=25)
+
+# Suggest much higher value for niter in practice (1000+)
+logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="gre", niter=5)
+
+logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="all", niter=5,
+                 progress.bar = TRUE)
 
 }
 

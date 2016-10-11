@@ -3,7 +3,7 @@ Kipp Johnson
 
 ## Repository for the R Package Fragility Index
 
-Implements the fragility index calculation as described in Walsh M, Srinathan SK, McAuley DF, et al. _The statistical significance of randomized controlled trial results is frequently fragile: a case for a Fragility Index_. Journal of clinical epidemiology. 67(6):622-8. 2014.
+Implements and extends the fragility index calculation as described in Walsh M, Srinathan SK, McAuley DF, et al. _The statistical significance of randomized controlled trial results is frequently fragile: a case for a Fragility Index_. Journal of clinical epidemiology. 67(6):622-8. 2014.
 
 ## Introduction
 
@@ -55,6 +55,8 @@ Older versions of the package can also be installed from CRAN:
 install.packages("fragilityindex")
 library(fragilityindex)
 ```
+
+## Functions
 
 ### Fragility Index
 

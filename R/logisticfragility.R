@@ -6,7 +6,6 @@
 #' @param covariate Covariate name (string) whose fragility you would like to test
 #' @param niter Number of iterations of algorithm to run
 #' @param conf.level Significance level, set by default to 95\%
-#' @param plot Should a histogram of results be plotted?
 #' @param progress.bar Print a progress bar?
 
 #' @importFrom stats glm.fit
@@ -18,11 +17,15 @@
 
 #'
 #' @examples
+#' # Import and format example data
 #' mydata <- read.csv("http://www.ats.ucla.edu/stat/data/binary.csv")
 #' mydata$rank <- factor(mydata$rank)
-#' # Suggest much higher value for niter (1000+)
+#'
+#' # Suggest much higher value for niter in practice (1000+)
 #' logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="gre", niter=5)
-#' logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="all", niter=1000, progress.bar = TRUE)
+#'
+#' logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="all", niter=5,
+#'                  progress.bar = TRUE)
 #'
 #' @return Returns the fragility index for a single run
 #' @export logisticfragility
