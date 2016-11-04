@@ -78,7 +78,7 @@ survivalfragilityinternal <- function(formula, data, conf.level=0.95){
           model.pval <- model.pval.new
         }
 
-        print(c("0/1 Outcome:", model.pval, fragility.index))
+        # print(c("0/1 Outcome:", model.pval, fragility.index))
 
       }else{
         stop("Something wrong with response variable")
