@@ -1,7 +1,7 @@
 Package: fragilityindex
 Type: Package
 Title: Fragility Index
-Version: 0.0.7
+Version: 0.0.8
 Authors@R: person("Kipp", "Johnson", email = "kipp.william.johnson@gmail.com", role = c("aut", "cre"))
 Description: Implements and extends the fragility index calculation for
     dichotomous results as described in Walsh, Srinathan, McAuley,
@@ -11,6 +11,8 @@ Description: Implements and extends the fragility index calculation for
 License: AGPL-3
 Imports:
     stats,
-    pbapply
+    pbapply,
+    survival,
+    stringr
 LazyData: TRUE
 RoxygenNote: 5.0.1.9000

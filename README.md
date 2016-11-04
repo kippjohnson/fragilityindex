@@ -118,4 +118,19 @@ Example output:
 6       rank4          123.35
 ~~~
 
+### Fragility index for survival analysis
+
+We also present a new method to calculate fragility index for survival analysis in a similar way to the calculation performed for the 2x2 and logistic regression fragility index calculations. We use the survdiff() function from the survival package in R to compute survival tests from the G-rho family of tests. 
+
+For this calculation, we randomly swap a 0/1 (survive/die) outcome in the survival dataset and continue then repeat this process, counting the number of swaps until the survival test is no longer significant. The number of swaps is the fragility index for this single iteration. We repeat this process a number of times and take the average of each resulting fragility index to obtain a more stable result.
+
+Example:
+
+~~~
+library(survival)
+head(lung) # example survival data
+lung$status <- lung$status - 1 # we require 0/1 outcomes; this variable originally is coded as 1/2
+
+survivalfragility(Surv(time, status) ~ pat.karno + strata(inst), data=lung, niter=100, progress.bar = TRUE)
+~~~
 
