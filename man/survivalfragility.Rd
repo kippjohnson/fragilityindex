@@ -28,7 +28,8 @@ Compute the fragility of a coefficient in a survival test. Wrapper function for 
 library(survival)
 lung$status = lung$status - 1 # recode status as a 0/1 variable (mandatory)
 
-survivalfragility(Surv(time, status) ~ pat.karno + strata(inst), data=lung, niter=10, progress.bar = FALSE)
+survivalfragility(Surv(time, status) ~ pat.karno + strata(inst),
+                  data=lung, niter=10, progress.bar = FALSE)
 
 }
 
