@@ -57,7 +57,7 @@ logisticfragility <- function(formula, data, covariate, niter, conf.level=0.95, 
   res <- replicate(niter, logisticfragilityinternal(formula=formula, data=data, covariate=covariate, conf.level=conf.level)$index)
     }
     mean.fragility <- mean(res)
-    return(fragility.index=mean.fragility)
+    return(index=mean.fragility)
   }
 }
 

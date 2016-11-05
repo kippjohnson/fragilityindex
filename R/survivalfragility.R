@@ -34,7 +34,7 @@ survivalfragility <- function(formula, data, niter, conf.level=0.95, progress.ba
 
        res <- replicate(niter, survivalfragilityinternal(formula=formula, data=data, conf.level=conf.level))
        mean.fragility <- mean(unlist(res))
-       return(fragility.index=mean.fragility)
+       return(index=mean.fragility)
 
      }
 }

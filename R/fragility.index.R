@@ -58,7 +58,7 @@ fragility.index <- function(intervention_event, control_event, intervention_n, c
           test <- fisher.test(mat)
         }
 
-        return(list(findex=fragility.index))
+        return(list(index=fragility.index))
       }
     }
 
