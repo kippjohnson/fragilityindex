@@ -23,7 +23,7 @@
 fragility.index <- function(intervention_event, control_event, intervention_n, control_n, conf.level=0.95, verbose=FALSE, print.mat=FALSE){
 
   if(control_event>intervention_event){
-    warning("Control events > intervention events. Swapping intervention and control groups.")
+    warning("Control events > intervention events; swapping intervention and control groups.")
     tmp_event <- intervention_event
     tmp_n <- intervention_n
 
@@ -51,7 +51,7 @@ fragility.index <- function(intervention_event, control_event, intervention_n, c
 
         while(test$p.value < alpha){
           fragility.index <- fragility.index + 1
-          intervention_event = intervention_event - 1
+          # intervention_event = intervention_event - 1
           control_event = control_event + 1
           mat <- matrix(c(intervention_event, control_event, intervention_n-intervention_event, control_n-control_event),nrow=2)
           if(print.mat==TRUE){ print(mat) }
@@ -76,7 +76,7 @@ fragility.index <- function(intervention_event, control_event, intervention_n, c
 
         while(test$p.value < alpha){
           fragility.index <- fragility.index + 1
-          intervention_event = intervention_event - 1
+          #intervention_event = intervention_event - 1
           control_event = control_event + 1
           mat <- matrix(c(intervention_event, control_event, intervention_n-intervention_event, control_n-control_event),nrow=2)
           if(print.mat==TRUE){ print(mat) }
