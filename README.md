@@ -9,28 +9,28 @@ Implements and extends the fragility index calculation as described in Walsh M, 
 As originally defined, the fragility index is the number of patients with a different outcome it would require to change a result from significant to non-significant. Consider for example the following example situation: In a clinical trial, there are two groups of patients. In group 1, 15/40 patients have an adverse event. In group 2, 5/40 patients have the adverse event. We can test this for statistical significance in the following way:
 
 ```
-> mat1 <- matrix(c(15,5,25,35), nrow=2)
-> mat1
-     [,1] [,2]
-[1,]   15   25
-[2,]    5   35
-> fisher.test(mat1)$p.value
-[1] 0.01877238
-```
-
-However, what if we move a single patient from Group 1 to Group 2?
-
-```
-> mat2 <- matrix(c(14,6,26,34), nrow=2)
+> mat1 <- matrix(c(15,6,25,34), nrow=2)
 > mat2
      [,1] [,2]
-[1,]   14   26
+[1,]   15   25
 [2,]    6   34
 > fisher.test(mat2)$p.value
-[1] 0.06916506
+[1] 0.04060921
 ```
 
-This result is no longer statistically significant at the alpha=0.05 level! This is a "fragile" statistical result, despite the moderately low initial p value. Because it took only a single patient moving from Group 1 to Group 2 to make the result non-significant, we can say this clinical trial has a fragility index of 1. If it had taken two patients with swapped outcomes, it would woul have a fragility index of 2, and so on. 
+However, what if a single additional patient in the second group had an event?
+
+```
+> mat2 <- matrix(c(15,7,25,33), nrow=2)
+> mat2
+     [,1] [,2]
+[1,]   15   25
+[2,]    7   33
+> fisher.test(mat2)$p.value
+[1] 0.07836101
+```
+
+This result is no longer statistically significant at the alpha=0.05 level! This is a "fragile" statistical result, despite the moderately low initial p value. Because it took only a single additional patient to make the result non-significant, we can say this clinical trial has a fragility index of 1. If it had taken two patients, this test would would have a fragility index of 2, and so on. 
 
 This package contains functions to automatically calculate fragility indices in several situations, as explained below.
 
@@ -65,7 +65,7 @@ library(fragilityindex)
 fragility.index(15, 5, 40, 40)
 ~~~
 
-For a dichotomous outcome, fragility index is the number of patients who if they were switched from one result to another would make a significant result at a given P-value non-significant. A smaller index means the observed result is more fragile to small variations.
+For a dichotomous outcome, fragility index is the additional number of patients with an event it would take to make a significant result at a given P-value non-significant. A smaller index means the observed result is more fragile to small variations.
 
 ### Reverse Fragility Index
 
@@ -73,7 +73,7 @@ For a dichotomous outcome, fragility index is the number of patients who if they
 revfragility.index(6,5,50,50, verbose=TRUE, print.mat=FALSE)
 ~~~
 
-This package also contains a function to compute the "reverse fragility index," or the number of patients it would require who if their results were swapped would take a conclusion from non-significant to significant. This may be applied to analyze the sensitivity of non-inferiority trials to small differences in event counts. A smaller index means the observed result is more fragile to small variations.
+This package also contains a function to compute the "reverse fragility index," or the number of patients it would require who if they did not experience an event would take a conclusion from non-significant to significant. This may be applied to analyze the sensitivity of non-inferiority trials to small differences in event counts. A smaller index means the observed result is more fragile to small variations.
 
 ### Logistic Beta Coefficient Regression Fragility
 
