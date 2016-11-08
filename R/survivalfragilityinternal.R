@@ -30,7 +30,10 @@ survivalfragilityinternal <- function(formula, data, conf.level=0.95){
 
   m0 <- survdiff(formula, indata)
   summary(m0)
-  model.pval <- ( 1 - pchisq(q=m0$chisq, df=nrow(m0$obs)-1) )
+  #print((m0))
+  model.pval <- as.numeric(1-pchisq(q=m0$chisq, df=(length(m0$n)-1)))
+
+  # print(paste("Initial model pval:", model.pval))
 
   # Extract the Surv object (i.e " Surv(time, event) ")
   so.str <- str_extract(as.character(formula)[2], pattern="^(.+?)\\)")
@@ -71,7 +74,7 @@ survivalfragilityinternal <- function(formula, data, conf.level=0.95){
         # print(sum( indata[,response.name]  ))
 
         m1 <- survdiff(formula, indata)
-        model.pval.new <- ( 1 - pchisq(q=m1$chisq, df=nrow(m1$obs)-1) )
+        model.pval.new <- as.numeric(1-pchisq(q=m1$chisq, df=(length(m1$n)-1)))
 
         if(model.pval.new>model.pval){
           fragility.index <- fragility.index + 1
