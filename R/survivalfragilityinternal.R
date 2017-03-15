@@ -38,11 +38,18 @@ survivalfragilityinternal <- function(formula, data, conf.level=0.95){
   # Extract the Surv object (i.e " Surv(time, event) ")
   so.str <- str_extract(as.character(formula)[2], pattern="^(.+?)\\)")
   so <- with(indata, eval(parse(text=so.str)))
-  #print(paste("so.str:", so.str))
+
+  mean.so <- mean(so)
+  timename <- attr(so, "dimnames")[[2]][1]
+
+  #print(mean.so)
+  # print(paste("so.str:", so.str))
   #print(so)
 
-  response.name <- names(which(sapply(indata, identical, so[1:nrow(indata),2])))
-  #print(paste("response.name:", response.name))
+  #response.name <- names(which(sapply(indata, identical, so[1:nrow(indata),2])))
+  response.name <- attr(so, "dimnames")[[2]][2]
+
+  # print(paste("response.name:", response.name))
   #print(paste("nchar(response.name)", nzchar(response.name)))
 
   a <- indata[,response.name]
@@ -59,17 +66,26 @@ survivalfragilityinternal <- function(formula, data, conf.level=0.95){
         x <- sample(indata[,response.name], size=1)
         # print(c("x", x))
 
-        if(x==0){
+        #if(x==0){
           # swap 0 for 1 in event column of indata
           index <- sample(which(indata[,response.name]==0),size=1)
-          indata[,response.name][index] <- 1
-        }
+          new.person <- indata[index,]
+          new.person[,response.name] <- 1
+          new.person[,timename] <- mean.so
+          #print(new.person)
+          indata <- rbind(indata, new.person)
+       # }
 
-        if(x==1){
+       # if(x==1){
           # swap 1 for 0 in event column of indata
-          index <- sample(which(indata[,response.name]==1),size=1)
-          indata[,response.name][index] <- 0
-        }
+          #index <- sample(which(indata[,response.name]==1),size=1)
+          #indata[,response.name][index] <- 0
+
+            # index <- sample(which(indata[,response.name]==0),size=1)
+            # new.person <- indata[index,]
+            # new.person[,response.name] <- 1
+            # indata <- rbind(indata, new.person)
+       # }
 
         # print(sum( indata[,response.name]  ))
 
@@ -90,4 +106,5 @@ survivalfragilityinternal <- function(formula, data, conf.level=0.95){
   }
   return(list(index=fragility.index))
 }
+
 
