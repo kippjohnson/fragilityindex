@@ -46,8 +46,9 @@ survivalfragilityinternal <- function(formula, data, conf.level=0.95){
   # print(paste("so.str:", so.str))
   #print(so)
 
-  #response.name <- names(which(sapply(indata, identical, so[1:nrow(indata),2])))
-  response.name <- attr(so, "dimnames")[[2]][2]
+  timename <- names(which(sapply(infile, identical, so[1:nrow(infile),1])))
+  response.name <- names(which(sapply(indata, identical, so[1:nrow(indata),2])))
+  # response.name <- attr(so, "dimnames")[[2]][2]
 
   # print(paste("response.name:", response.name))
   #print(paste("nchar(response.name)", nzchar(response.name)))
