@@ -40,21 +40,22 @@ survivalfragilityinternal <- function(formula, data, conf.level=0.95){
   so <- with(indata, eval(parse(text=so.str)))
 
   mean.so <- mean(so)
-  timename <- attr(so, "dimnames")[[2]][1]
+  # timename <- attr(so, "dimnames")[[2]][1]
 
-  #print(mean.so)
+  # print(mean.so)
   # print(paste("so.str:", so.str))
-  #print(so)
+  # print(so)
 
-  timename <- names(which(sapply(infile, identical, so[1:nrow(infile),1])))
-  response.name <- names(which(sapply(indata, identical, so[1:nrow(indata),2])))
+       timename <- names(which(sapply(indata, identical, so[1:nrow(indata),1])))
+  response.name <- names(which(sapply(indata, identical, as.integer(so[1:nrow(indata),2]))))
   # response.name <- attr(so, "dimnames")[[2]][2]
 
-  # print(paste("response.name:", response.name))
+  #print(paste("response.name:", response.name))
+  #print(paste("timename:", timename))
   #print(paste("nchar(response.name)", nzchar(response.name)))
 
   a <- indata[,response.name]
-  #print(a)
+  # print(a)
   #print(model.pval)
 
   if(model.pval>alpha){ # If covariate is not significant to start with...
@@ -105,7 +106,7 @@ survivalfragilityinternal <- function(formula, data, conf.level=0.95){
       }
     }
   }
-  return(list(index=fragility.index))
+  return(list(findex=fragility.index))
 }
 
 
