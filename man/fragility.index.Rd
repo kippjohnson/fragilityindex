@@ -34,4 +34,3 @@ Compute the fragility index for a dichotomous outcome, i.e. the number of flippe
 fragility.index(15, 5, 40, 40)
 
 }
-

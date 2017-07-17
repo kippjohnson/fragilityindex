@@ -1,5 +1,5 @@
 #' @title Reverse Fragility Index Calculation
-#' @description Compute the reverse fragility index for a dichotomous outcome, i.e. the number of flipped cases it would take to make a non-signficicant result significant.
+#' @description Compute the reverse fragility index for a dichotomous outcome, i.e. the number of flipped cases it would take to make a non-significant result significant.
 #'
 #' @param intervention_event Number of events in intervention group
 #' @param control_event Number of events in control group

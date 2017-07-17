@@ -2,34 +2,43 @@
 % Please edit documentation in R/survivalfragility.R
 \name{survivalfragility}
 \alias{survivalfragility}
-\title{Survival fragility function}
+\title{Survival Fragility Function}
 \usage{
-survivalfragility(formula, data, niter, conf.level = 0.95,
-  progress.bar = FALSE)
+survivalfragility(formula, data, covariate = "all.factors.default",
+  conf.level = 0.95, verbose = FALSE)
 }
 \arguments{
-\item{formula}{Model formula which will be evaluated by glm()}
+\item{formula}{Model formula which will be evaluated by coxph()}
 
-\item{data}{Dataframe with values for model forma, passed to glm()}
+\item{data}{Dataframe with values for model forma, passed to coxph()}
 
-\item{niter}{Number of iterations of algorithm to run}
+\item{covariate}{Vector of covariates to find fragility index for. Default is all covariates in formula}
 
-\item{conf.level}{Significance level, set by default to 95\%}
+\item{conf.level}{Significance level}
 
-\item{progress.bar}{Print a progress bar?}
+\item{verbose}{Logical indicating if function will return verbose results or only fragility index}
 }
 \value{
-Returns the mean fragility index for a niter calculations
+If verbose is FALSE, returns a list with fragility indices for selected covariates. If
+verbose is TRUE, returns a list with p-values for each fragility index
+at each iteration of the algorithm.
 }
 \description{
-Compute the fragility of a coefficient in a survival test. Wrapper function for logisticfragilityinternal. Uses the survdiff() function from the survival package.
+Compute the fragility of a coefficient in a survival test, i.e. the number of removed observations it would take to make a significant-result non-significant. Uses the coxph() function from the survival package.
 }
 \examples{
-library(survival)
-lung$status = lung$status - 1 # recode status as a 0/1 variable (mandatory)
+library(survival); data <- lung
+data$status = lung$status - 1 # recode status as a 0/1 variable
 
 survivalfragility(Surv(time, status) ~ pat.karno + strata(inst),
-                  data=lung, niter=10, progress.bar = FALSE)
+                  data, covariate = "pat.karno")
+
+survivalfragility(Surv(time, status) ~ pat.karno + ph.karno + strata(inst),
+                  data, verbose = TRUE)
+                  #algorithm does not converge for strata(inst)
+
+survivalfragility(Surv(time, status) ~ pat.karno + ph.karno + strata(inst),
+                  data, covariate = c("pat.karno","ph.karno"))
+
 
 }
-

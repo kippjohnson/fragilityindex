@@ -28,10 +28,9 @@ verbose is TRUE, returns a list with p-values for each fragility index
 at each iteration of the algorithm.
 }
 \description{
-Compute the reverse fragility index for a dichotomous outcome, i.e. the number of flipped cases it would take to make a non-signficicant result significant.
+Compute the reverse fragility index for a dichotomous outcome, i.e. the number of flipped cases it would take to make a non-significant result significant.
 }
 \examples{
 revfragility.index(6,5,50,50, verbose=TRUE, print.mat=FALSE)
 
 }
-
