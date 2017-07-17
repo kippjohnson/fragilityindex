@@ -3,6 +3,7 @@ Type: Package
 Title: Fragility Index
 Version: 0.1.0
 Authors@R: person("Kipp", "Johnson", email = "kipp.william.johnson@gmail.com", role = c("aut", "cre"))
+           person("Eli", "Rapoport", email = "rapoport.eli at gmail.com", role = c("aut"))
 Description: Implements and extends the fragility index calculation for
     dichotomous results as described in Walsh, Srinathan, McAuley,
     Mrkobrada, Levine, Ribic, Molnar, Dattani, Burke, Guyatt,
