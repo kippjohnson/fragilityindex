@@ -9,6 +9,15 @@
 #'
 #' @importFrom survival coxph
 #' @importFrom survival Surv
+#' @importFrom stats glm
+#' @importFrom stats terms
+#' @importFrom stats terms.formula
+#' @importFrom stats anova
+#' @importFrom stats update
+#' @importFrom stats as.formula
+#' @importFrom stats residuals
+#' @importFrom stats anova
+
 #' @examples
 #' library(survival); data <- lung
 #' data$status = lung$status - 1 # recode status as a 0/1 variable
@@ -27,6 +36,7 @@
 #' @return If verbose is FALSE, returns a list with fragility indices for selected covariates. If
 #' verbose is TRUE, returns a list with p-values for each fragility index
 #' at each iteration of the algorithm.
+#'
 #' @export survivalfragility
 
 survivalfragility <- function(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE){

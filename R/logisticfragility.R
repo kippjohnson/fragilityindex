@@ -8,6 +8,13 @@
 #' @param verbose Logical indicating if function will return verbose results or only fragility index
 #'
 #' @importFrom stats glm
+#' @importFrom stats terms
+#' @importFrom stats terms.formula
+#' @importFrom stats anova
+#' @importFrom stats update
+#' @importFrom stats as.formula
+#' @importFrom stats residuals
+#' @importFrom stats anova
 #'
 #' @examples
 #' # Import and format example data
@@ -18,12 +25,10 @@
 #'
 #' logisticfragility(admit ~ gre + gpa + rank, data = mydata)
 #'
-#' #algorithm does not converge when confidence level is very low
-#' logisticfragility(admit~gre+gpa+rank,data=mydata,conf.level=0.05)
-#'
 #' @return If verbose is FALSE, returns a list with fragility indices for selected covariates. If
 #' verbose is TRUE, returns a list with p-values for each fragility index
 #' at each iteration of the algorithm.
+#'
 #' @export logisticfragility
 
 

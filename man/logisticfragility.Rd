@@ -35,7 +35,4 @@ logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="gpa", verb
 
 logisticfragility(admit ~ gre + gpa + rank, data = mydata)
 
-#algorithm does not converge when confidence level is very low
-logisticfragility(admit~gre+gpa+rank,data=mydata,conf.level=0.05)
-
 }
