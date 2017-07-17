@@ -12,7 +12,6 @@
 #' @importFrom stats glm
 #' @importFrom stats terms
 #' @importFrom stats terms.formula
-#' @importFrom stats anova
 #' @importFrom stats update
 #' @importFrom stats as.formula
 #' @importFrom stats residuals
