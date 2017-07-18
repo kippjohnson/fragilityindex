@@ -11,10 +11,7 @@ Description: Implements and extends the fragility index calculation for
     <DOI:10.1016/j.jclinepi.2013.10.019>.
 License: MIT + file LICENSE
 Imports:
-    base,
     stats,
-    pbapply,
-    survival,
-    stringr
+    survival
 LazyData: TRUE
 RoxygenNote: 6.0.1
