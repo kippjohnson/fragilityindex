@@ -93,7 +93,7 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
 
     pval <- anova(newmodel, newnullmodel, test = "LRT")$`Pr(>Chi)`[2]
     if (is.na(pval)) {
-      stop("algorithm did not converge")
+      return(list(fragility.index = NA, point.diagnostics = "algorithm did not converge"))
     }
 
     index <- index + 1
@@ -101,7 +101,7 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
     pvalues <- append(pvalues, pval)
   }
   if (iter >= nrow(data)) {
-    stop(list("algorithm did not converge"))
+    return(list(fragility.index = NA, point.diagnostics = "algorithm did not converge"))
   }
   resulting.pval <- pvalues[-1]
   if (not.significant) {
