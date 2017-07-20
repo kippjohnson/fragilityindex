@@ -15,6 +15,7 @@
 #' @importFrom stats as.formula
 #' @importFrom stats residuals
 #' @importFrom stats anova
+#' @importFrom stats complete.cases
 #'
 #' @examples
 #' # Import and format example data
@@ -32,6 +33,7 @@
 #' @export logisticfragility
 
 
+#interaction terms?
 
 logisticfragility <- function(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE){
 
@@ -43,7 +45,9 @@ logisticfragility <- function(formula, data, covariate = "all.factors.default", 
   }
 
   result.store <- vector("list", length(covariate.names))
-  names(result.store) = covariate.names
+  names(result.store) <- covariate.names
+
+  data <- data[complete.cases(data[ ,covariate.names]), ]
 
   for (i in 1:length(covariate.names)) {
     if (verbose==TRUE) {
