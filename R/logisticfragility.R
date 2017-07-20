@@ -33,15 +33,20 @@
 #' @export logisticfragility
 
 
-#interaction terms?
-
 logisticfragility <- function(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE){
 
   if ("all.factors.default" %in% covariate) {
     object <- terms.formula(formula)
-    covariate.names <- attr(object, "term.labels")
+    terms <- attr(object, "term.labels")
+    factors <- attr(attr(object,"factors"),"dimnames")[[1]]
+    covariate.names <- intersect(factors,terms)
   } else {
     covariate.names <- covariate
+    terms <- covariate
+  }
+
+  if (!identical(sort(terms),sort(covariate.names))) { #interaction terms present in formula
+    stop("Error: Formula has predictors which are not covariates!")
   }
 
   result.store <- vector("list", length(covariate.names))
@@ -66,14 +71,12 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
   alpha <- (1 - conf.level)
 
   model <- glm(formula, data, family = "binomial")
-  model <- update(model, .~.-1)
-  formula <- model$formula
 
   nullmodel <- update(model, as.formula(paste(".~.-", covariate)))
 
   delta.resid <- model$residuals - nullmodel$residuals
   index <- c(1:length(delta.resid))
-  y = formula[[2]]
+  y <- formula[[2]]
   ordering <- cbind(index, delta.resid, data[,paste(y)])
   ordering <- cbind(ordering, (ordering[ ,2] - ordering[ ,3]*2*ordering[ ,2]))
   ordering <- ordering[order(-ordering[ ,4]), ]
