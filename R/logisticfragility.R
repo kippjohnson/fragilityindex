@@ -82,6 +82,10 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
   ordering <- ordering[order(-ordering[ ,4]), ]
 
   pval <- anova(model, nullmodel, test = "LRT")$`Pr(>Chi)`[2]
+  if (is.na(pval)) {
+    return(list(fragility.index = 0, point.diagnostics =
+                  "No points removed. Covariate already not significant at confidence level" ))
+  }
   index <- 1
   indices <- c()
   fragility.index <- 0
@@ -105,8 +109,7 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
     if (is.na(pval.new)) {
       return(list(fragility.index = NA, point.diagnostics = "algorithm did not converge"))
     }
-    if (pval.new > pval){
-
+    if (pval.new > pval) {
       pval <- pval.new
       indices <- indices.new
       fragility.index <- fragility.index + 1
@@ -120,11 +123,13 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
   if (iter >= nrow(data)) {
     return(list(fragility.index = NA, point.diagnostics = "algorithm did not converge"))
   }
-  resulting.pval <- pvalues[-1]
-  point.diagnostics <- data[indices, ]
+
   if (not.significant) {
     resulting.pval <- anova(model, nullmodel, test = "LRT")$`Pr(>Chi)`[2]
     point.diagnostics <- paste("No points removed. Covariate already not significant at confidence level", conf.level)
+  } else{
+    resulting.pval <- pvalues[-1]
+    point.diagnostics <- data[indices, ]
   }
   point.diagnostics <- cbind(point.diagnostics, resulting.pval)
 
