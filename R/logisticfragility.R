@@ -33,7 +33,7 @@
 #' @export logisticfragility
 
 
-logisticfragility <- function(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE){
+logisticfragility <- function(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE) {
 
   if ("all.factors.default" %in% covariate) {
     object <- terms.formula(formula)

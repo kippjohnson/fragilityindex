@@ -41,7 +41,7 @@
 #'
 #' @export survivalfragility
 
-survivalfragility <- function(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE){
+survivalfragility <- function(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE) {
 
   if ("all.factors.default" %in% covariate) {
     object <- terms.formula(formula)
