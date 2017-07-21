@@ -13,13 +13,6 @@
 #' @importFrom stats anova
 #' @importFrom stats as.formula
 #'
-#' @examples
-#' library(DAAG)
-#' data(allbacks)
-#' model <-  lm(weight ~ volume + area, data = allbacks)
-#' summary(model)
-#' linearfragility(weight ~ volume + area, allbacks, verbose = TRUE)
-#'
 #'
 #' @return If verbose is FALSE, returns a list with fragility indices for selected covariates. If
 #' verbose is TRUE, returns a list with p-values for each fragility index at each iteration

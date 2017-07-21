@@ -10,14 +10,13 @@
 #' @importFrom survival coxph
 #' @importFrom survival Surv
 #' @importFrom stats glm
-#' @importFrom stats terms
 #' @importFrom stats terms.formula
+#' @importFrom stats terms
 #' @importFrom stats update
 #' @importFrom stats as.formula
 #' @importFrom stats residuals
 #' @importFrom stats anova
-#' @importfrom stats complete.cases
-
+#'
 #' @examples
 #' library(survival); data <- lung
 #' data$status = lung$status - 1 # recode status as a 0/1 variable
@@ -32,7 +31,7 @@
 #' survivalfragility(Surv(time, status) ~ pat.karno + ph.karno + strata(inst),
 #'                   data, covariate = c("pat.karno","ph.karno"))
 #'
-#' survivalfragility(Surv(futime,death)~sex+age,data=flchain)
+#'
 #'
 #'
 #' @return If verbose is FALSE, returns a list with fragility indices for selected covariates. If
@@ -40,6 +39,10 @@
 #' at each iteration of the algorithm.
 #'
 #' @export survivalfragility
+
+
+#include in examples later. makes checking take a long time (approx 3 min)
+#survivalfragility(Surv(futime,death)~sex+age,data=flchain)
 
 survivalfragility <- function(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE) {
 

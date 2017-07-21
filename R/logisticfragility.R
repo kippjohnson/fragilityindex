@@ -38,14 +38,14 @@ logisticfragility <- function(formula, data, covariate = "all.factors.default", 
   if ("all.factors.default" %in% covariate) {
     object <- terms.formula(formula)
     terms <- attr(object, "term.labels")
-    factors <- attr(attr(object,"factors"),"dimnames")[[1]]
-    covariate.names <- intersect(factors,terms)
+    factors <- attr(attr(object, "factors"), "dimnames")[[1]]
+    covariate.names <- intersect(factors, terms)
   } else {
     covariate.names <- covariate
     terms <- covariate
   }
 
-  if (!identical(sort(terms),sort(covariate.names))) { #interaction terms present in formula
+  if (!identical(sort(terms), sort(covariate.names))) { #interaction terms present in formula
     stop("Error: Formula has predictors which are not covariates!")
   }
 
@@ -55,16 +55,16 @@ logisticfragility <- function(formula, data, covariate = "all.factors.default", 
   data <- data[complete.cases(data[ ,covariate.names]), ]
 
   for (i in 1:length(covariate.names)) {
-    if (verbose==TRUE) {
+    if (verbose == TRUE) {
       result <- logisticfragilityinternal(formula, data, covariate.names[i], conf.level)
     } else{
       result <- logisticfragilityinternal(formula, data, covariate.names[i], conf.level)
       result <- result[1]
     }
     result.store[[paste(covariate.names[i])]] <- result
-    }
-  return(result.store)
   }
+  return(result.store)
+}
 
 logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
 
@@ -77,7 +77,7 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
   delta.resid <- model$residuals - nullmodel$residuals
   index <- c(1:length(delta.resid))
   y <- formula[[2]]
-  ordering <- cbind(index, delta.resid, data[,paste(y)])
+  ordering <- cbind(index, delta.resid, data[, paste(y)])
   ordering <- cbind(ordering, (ordering[ ,2] - ordering[ ,3]*2*ordering[ ,2]))
   ordering <- ordering[order(-ordering[ ,4]), ]
 
@@ -100,7 +100,7 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
   while (pval <= alpha & (iter < nrow(data))) {
 
     indices.new <- c(indices, index)
-    point <- ordering[indices.new,1]
+    point <- ordering[indices.new, 1]
     modified.data <- data[-point, ]
     newmodel <- glm(formula, modified.data, family = "binomial")
     newnullmodel <- update(newmodel, as.formula(paste(".~.-", covariate)))
