@@ -16,6 +16,7 @@
 #' @importFrom stats as.formula
 #' @importFrom stats residuals
 #' @importFrom stats anova
+#' @importfrom stats complete.cases
 
 #' @examples
 #' library(survival); data <- lung
@@ -50,6 +51,12 @@ survivalfragility <- function(formula, data, covariate = "all.factors.default", 
   result.store <- vector("list", length(covariate.names))
   names(result.store) = covariate.names
 
+  model <- coxph(formula,data)
+  na.data <- model$na.action
+  if (!is.null(na.data)){
+    data <- data[-na.data,]
+  }
+
   for (i in 1:length(covariate.names)) {
     if (verbose == TRUE) {
       result <- survivalfragilityinternal(formula, data, covariate.names[i], conf.level)
@@ -67,10 +74,12 @@ survivalfragilityinternal <- function(formula, data, covariate, conf.level) {
   alpha <- (1 - conf.level)
 
   model <- coxph(formula, data)
-  na.data <- model$na.action
-  indata <- data[-na.data, ]
-  model <- coxph(formula, indata)
 
+  #na.data <- model$na.action
+  #indata <- data[-na.data, ]
+  #model <- coxph(formula, indata)
+
+  indata <- data
   formula <- model$formula
 
   nullmodel <- update(model, as.formula(paste(".~.-", covariate)))

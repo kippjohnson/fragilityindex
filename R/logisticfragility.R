@@ -83,6 +83,8 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
 
   pval <- anova(model, nullmodel, test = "LRT")$`Pr(>Chi)`[2]
   index <- 1
+  indices <- c()
+  fragility.index <- 0
   iter <- 0
 
   pvalues <- pval
@@ -90,33 +92,38 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
   if (pval > alpha) {
     not.significant <- TRUE
   }
+
   while (pval <= alpha & (iter < nrow(data))) {
-    points <- ordering[1:index,1]
 
-    modified.data <- data[-points, ]
-
+    indices.new <- c(indices, index)
+    point <- ordering[indices.new,1]
+    modified.data <- data[-point, ]
     newmodel <- glm(formula, modified.data, family = "binomial")
     newnullmodel <- update(newmodel, as.formula(paste(".~.-", covariate)))
+    pval.new <- anova(newmodel, newnullmodel, test = "LRT")$`Pr(>Chi)`[2]
 
-    pval <- anova(newmodel, newnullmodel, test = "LRT")$`Pr(>Chi)`[2]
-    if (is.na(pval)) {
+    if (is.na(pval.new)) {
       return(list(fragility.index = NA, point.diagnostics = "algorithm did not converge"))
+    }
+    if (pval.new > pval){
+
+      pval <- pval.new
+      indices <- indices.new
+      fragility.index <- fragility.index + 1
+      pvalues <- append(pvalues, pval)
     }
 
     index <- index + 1
     iter <- iter + 1
-    pvalues <- append(pvalues, pval)
   }
+
   if (iter >= nrow(data)) {
     return(list(fragility.index = NA, point.diagnostics = "algorithm did not converge"))
   }
   resulting.pval <- pvalues[-1]
+  point.diagnostics <- data[indices, ]
   if (not.significant) {
     resulting.pval <- anova(model, nullmodel, test = "LRT")$`Pr(>Chi)`[2]
-  }
-  fragility.index <- index - 1
-  point.diagnostics <- data[1:(index-1), ]
-  if (not.significant) {
     point.diagnostics <- paste("No points removed. Covariate already not significant at confidence level", conf.level)
   }
   point.diagnostics <- cbind(point.diagnostics, resulting.pval)
