@@ -130,7 +130,7 @@ survivalfragilityinternal <- function(formula, data, covariate, conf.level) {
   #ordering <- cbind(index, delta.resid, data[ ,paste(y)])
   #ordering <- cbind(ordering, (ordering[ ,2] - ordering[ ,3]*2*ordering[ ,2]))
   #ordering <- cbind(ordering,abs(ordering[,2]))
-  ordering <- ordering[order(ordering[ ,4]), ]
+  ordering <- ordering[order(-ordering[ ,4]), ]
 
   #ordering <- ordering[order(-ordering[ ,4]), ]
 

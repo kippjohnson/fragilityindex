@@ -11,8 +11,14 @@
 #' @importFrom stats terms.formula
 #' @importFrom stats complete.cases
 #' @importFrom stats anova
+#' @importFrom stats as.formula
 #'
 #' @examples
+#' library(DAAG)
+#' data(allbacks)
+#' model <-  lm(weight ~ volume + area, data = allbacks)
+#' summary(model)
+#' linearfragility(weight ~ volume + area, allbacks, verbose = TRUE)
 #'
 #'
 #' @return If verbose is FALSE, returns a list with fragility indices for selected covariates. If
@@ -50,5 +56,75 @@ linearfragility <- function(formula, data, covariate = "all.factors.default", co
     result.store[[paste(covariate.names[i])]] <- result
   }
   return(result.store)
+}
+
+linearfragilityinternal <- function(formula, data, covariate, conf.level) {
+  alpha <- 1 - conf.level
+  model <- lm(formula, data)
+  nullmodel <- update(model, as.formula(paste(".~.-", covariate)))
+
+  delta.resid <- model$residuals - nullmodel$residuals
+  index <- c(1:length(delta.resid))
+  y <- formula[[2]]
+  ordering <- cbind(index, delta.resid, data[ ,paste(y)])
+  ordering <- cbind(ordering, ordering[,2])
+  ordering <- ordering[order(-ordering[,4]), ]
+  #ordering <- ordering[sample(nrow(ordering)),]
+
+  pval <- anova(model, nullmodel, test = "LRT")$`Pr(>Chi)`[2]
+  if (is.na(pval)) {
+    return(list(fragility.index = 0, point.diagnostics =
+                  "No points removed. Covariate already not significant at confidence level" ))
+  }
+  index <- 1
+  indices <- c()
+  fragility.index <- 0
+  iter <- 0
+
+  pvalues <- pval
+  not.significant <- FALSE
+
+  if (pval > alpha) {
+    not.significant <- TRUE
+  }
+
+  while (pval <= alpha & (iter < nrow(data))) {
+
+    indices.new <- c(indices, index)
+    point <- ordering[indices.new, 1]
+    modified.data <- data[-point, ]
+    newmodel <- lm(formula, modified.data)
+    newnullmodel <- update(newmodel, as.formula(paste(".~.-", covariate)))
+    pval.new <- anova(newmodel, newnullmodel, test = "LRT")$`Pr(>Chi)`[2]
+
+    if (is.na(pval.new)) {
+      return(list(fragility.index = NA, point.diagnostics = "algorithm did not converge"))
+    }
+    if (pval.new > pval) {
+      pval <- pval.new
+      indices <- indices.new
+      fragility.index <- fragility.index + 1
+      pvalues <- append(pvalues, pval)
+    }
+
+    index <- index + 1
+    iter <- iter + 1
+  }
+
+  if (iter >= nrow(data)) {
+    return(list(fragility.index = NA, point.diagnostics = "algorithm did not converge"))
+  }
+
+  if (not.significant) {
+    resulting.pval <- anova(model, nullmodel, test = "LRT")$`Pr(>Chi)`[2]
+    point.diagnostics <- paste("No points removed. Covariate already not significant at confidence level", conf.level)
+  } else{
+    resulting.pval <- pvalues[-1]
+    point.diagnostics <- data[indices, ]
+  }
+  point.diagnostics <- cbind(point.diagnostics, resulting.pval)
+
+  return(list(fragility.index = fragility.index, point.diagnostics = point.diagnostics))
+
 }
 
