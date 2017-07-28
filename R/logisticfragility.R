@@ -14,7 +14,6 @@
 #' @importFrom stats update
 #' @importFrom stats as.formula
 #' @importFrom stats residuals
-#' @importFrom stats anova
 #' @importFrom stats complete.cases
 #'
 #' @examples

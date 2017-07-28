@@ -10,7 +10,7 @@
 #' @param print.mat Logical indicating if 2x2 matrices should be printed for each iteration of algorithm
 #'
 #' @examples
-#' fragility.index(15, 5, 40, 40)
+#' fragility.index(15, 5, 40, 41, verbose = TRUE)
 #'
 #' @return If verbose is FALSE, returns a list with fragility index. If
 #' verbose is TRUE, returns a list with p-values for each fragility index
@@ -45,7 +45,7 @@ fragility.index <- function(intervention_event, control_event, intervention_n, c
 
     if(verbose==FALSE){
       if(test$p.value>alpha | test2$p.value> alpha){
-        return(list(findex=fragility.index))
+        return(list(index=fragility.index))
 
       }else{
 
@@ -68,25 +68,27 @@ fragility.index <- function(intervention_event, control_event, intervention_n, c
       if(test$p.value>alpha | test2$p.value>alpha){
         res <- c(fragility.index, test$p.value)
         outdf <- rbind(outdf, res)
+        names(outdf) <- c("index","p.value")
         return(outdf)
 
       }else{
         res <- c(fragility.index, test$p.value)
         outdf <- rbind(outdf, res)
+        names(outdf) <- c("index","p.value")
 
         while(test$p.value < alpha){
           fragility.index <- fragility.index + 1
           #intervention_event = intervention_event - 1
-          control_event = control_event + 1
+          control_event <- control_event + 1
           mat <- matrix(c(intervention_event, control_event, intervention_n-intervention_event, control_n-control_event),nrow=2)
           if(print.mat==TRUE){ print(mat) }
           test <- fisher.test(mat)
           res <- c(fragility.index, test$p.value)
           outdf <- rbind(outdf, res)
+          names(outdf) <- c("index","p.value")
         }
       }
     }
-    names(outdf) <- c("fragility.index","p.value")
     outdf$p.value <- round(outdf$p.value, digits=3)
     return(outdf)
 }

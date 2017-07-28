@@ -1,5 +1,5 @@
 #' @title Survival Fragility Function
-#' @description Compute the fragility of a coefficient in a survival test, i.e. the number of removed observations it would take to make a significant-result non-significant. Uses the coxph() function from the survival package.
+#' @description Compute the fragility of a coefficient in a Cox P-H regression for survival analysis, i.e. the number of removed observations it would take to make a significant-result non-significant. Uses the coxph() function from the survival package.
 #'
 #' @param formula Model formula which will be evaluated by coxph()
 #' @param data Dataframe with values for model forma, passed to coxph()
