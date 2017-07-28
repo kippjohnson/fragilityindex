@@ -41,4 +41,6 @@ survivalfragility(Surv(time, status) ~ pat.karno + ph.karno + strata(inst),
                   data, covariate = c("pat.karno","ph.karno"))
 
 
+
+
 }

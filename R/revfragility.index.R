@@ -79,6 +79,7 @@ revfragility.index <- function(intervention_event, control_event, intervention_n
     if(test$p.value<alpha | test2$p.value<alpha){
       res <- c(fragility.index, test$p.value)
       outdf <- rbind(outdf, res)
+      names(outdf) <- c("index","p.value")
       return(outdf)
 
     }else{
@@ -102,7 +103,7 @@ revfragility.index <- function(intervention_event, control_event, intervention_n
       }
     }
   }
-  names(outdf) <- c("reverse.fragility.index","p.value")
+  names(outdf) <- c("index","p.value")
   outdf$p.value <- round(outdf$p.value, digits=3)
   return(outdf)
 }

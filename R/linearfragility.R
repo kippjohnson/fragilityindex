@@ -1,38 +1,26 @@
-#' @title Logistic Fragility Function
-#' @description Compute the fragility of a coefficient in a logistic regression for dichotomous outcomes, i.e. the number of removed observations it would take to make a significant-result non-significant. Uses the glm() function from the stats package.
+#' @title Linear Fragility Function
+#' @description Compute the fragility of a coefficient in a linear regression, i.e. the number of removed observations it would take to make a significant-result non-significant. Uses the lm() function from the stats package.
 #'
-#' @param formula Model formula which will be evaluated by glm()
-#' @param data Dataframe with values for model forma, passed to glm()
+#' @param formula Model formula which will be evaluated by lm()
+#' @param data Dataframe with values for model forma, passed to lm()
 #' @param covariate Vector of covariates to find fragility index for. Default is all covariates in formula
 #' @param conf.level Significance level
 #' @param verbose Logical indicating if function will return verbose results or only fragility index
 #'
-#' @importFrom stats glm
-#' @importFrom stats terms
+#' @importFrom stats lm
 #' @importFrom stats terms.formula
-#' @importFrom stats anova
-#' @importFrom stats update
-#' @importFrom stats as.formula
-#' @importFrom stats residuals
 #' @importFrom stats complete.cases
+#' @importFrom stats anova
+#' @importFrom stats as.formula
 #'
-#' @examples
-#' # Import and format example data
-#' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-#' mydata$rank <- factor(mydata$rank)
-#'
-#' logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="gpa", verbose = TRUE)
-#'
-#' logisticfragility(admit ~ gre + gpa + rank, data = mydata)
 #'
 #' @return If verbose is FALSE, returns a list with fragility indices for selected covariates. If
-#' verbose is TRUE, returns a list with p-values for each fragility index
-#' at each iteration of the algorithm.
+#' verbose is TRUE, returns a list with p-values for each fragility index at each iteration
+#' of the algorithm.
 #'
-#' @export logisticfragility
+#' @export linearfragility
 
-
-logisticfragility <- function(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE) {
+linearfragility <- function(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE) {
 
   if ("all.factors.default" %in% covariate) {
     object <- terms.formula(formula)
@@ -44,7 +32,7 @@ logisticfragility <- function(formula, data, covariate = "all.factors.default", 
     terms <- covariate
   }
 
-  if (!identical(sort(terms), sort(covariate.names))) { #interaction terms present in formula
+  if (!identical(sort(terms), sort(covariate.names))) {
     stop("Error: Formula has predictors which are not covariates!")
   }
 
@@ -54,10 +42,8 @@ logisticfragility <- function(formula, data, covariate = "all.factors.default", 
   data <- data[complete.cases(data[ ,covariate.names]), ]
 
   for (i in 1:length(covariate.names)) {
-    if (verbose == TRUE) {
-      result <- logisticfragilityinternal(formula, data, covariate.names[i], conf.level)
-    } else{
-      result <- logisticfragilityinternal(formula, data, covariate.names[i], conf.level)
+    result <- linearfragilityinternal(formula, data, covariate.names[i], conf.level)
+    if (verbose == FALSE) {
       result <- result[1]
     }
     result.store[[paste(covariate.names[i])]] <- result
@@ -65,20 +51,18 @@ logisticfragility <- function(formula, data, covariate = "all.factors.default", 
   return(result.store)
 }
 
-logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
-
-  alpha <- (1 - conf.level)
-
-  model <- glm(formula, data, family = "binomial")
-
+linearfragilityinternal <- function(formula, data, covariate, conf.level) {
+  alpha <- 1 - conf.level
+  model <- lm(formula, data)
   nullmodel <- update(model, as.formula(paste(".~.-", covariate)))
 
   delta.resid <- model$residuals - nullmodel$residuals
   index <- c(1:length(delta.resid))
   y <- formula[[2]]
-  ordering <- cbind(index, delta.resid, data[, paste(y)])
-  ordering <- cbind(ordering, (ordering[ ,2] - ordering[ ,3]*2*ordering[ ,2]))
-  ordering <- ordering[order(-ordering[ ,4]), ]
+  ordering <- cbind(index, delta.resid, data[ ,paste(y)])
+  ordering <- cbind(ordering, ordering[,2])
+  ordering <- ordering[order(-ordering[,4]), ]
+  #ordering <- ordering[sample(nrow(ordering)),]
 
   pval <- anova(model, nullmodel, test = "LRT")$`Pr(>Chi)`[2]
   if (is.na(pval)) {
@@ -92,6 +76,7 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
 
   pvalues <- pval
   not.significant <- FALSE
+
   if (pval > alpha) {
     not.significant <- TRUE
   }
@@ -101,7 +86,7 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
     indices.new <- c(indices, index)
     point <- ordering[indices.new, 1]
     modified.data <- data[-point, ]
-    newmodel <- glm(formula, modified.data, family = "binomial")
+    newmodel <- lm(formula, modified.data)
     newnullmodel <- update(newmodel, as.formula(paste(".~.-", covariate)))
     pval.new <- anova(newmodel, newnullmodel, test = "LRT")$`Pr(>Chi)`[2]
 
@@ -133,4 +118,6 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
   point.diagnostics <- cbind(point.diagnostics, resulting.pval)
 
   return(list(fragility.index = fragility.index, point.diagnostics = point.diagnostics))
+
 }
+
