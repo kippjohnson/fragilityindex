@@ -128,8 +128,8 @@ logisticfragilityinternal <- function(formula, data, covariate, conf.level) {
     point.diagnostics <- paste("No points removed. Covariate already not significant at confidence level", conf.level)
   } else{
     resulting.pval <- pvalues[-1]
-    removed = ordering[1:(index-1),1]
-    point.diagnostics <- data[removed, ] ######## IMPLEMENT FIX IN SURVIVAL AND LINEAR
+    removed <- ordering[indices,1]
+    point.diagnostics <- data[removed, ]
   }
   point.diagnostics <- cbind(point.diagnostics, resulting.pval)
 

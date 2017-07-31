@@ -40,10 +40,6 @@
 #'
 #' @export survivalfragility
 
-
-#include in examples later. makes checking take a long time (approx 3 min)
-#survivalfragility(Surv(futime,death)~sex+age,data=flchain)
-
 survivalfragility <- function(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE) {
 
   if ("all.factors.default" %in% covariate) {
@@ -92,54 +88,8 @@ survivalfragilityinternal <- function(formula, data, covariate, conf.level) {
   y <- event
 
   ordering <- cbind(index, delta.resid, data[ ,paste(y)])
-
-  ordering <- cbind(ordering, (ordering[ ,2] - ordering[ ,3] * 2 * ordering[ ,2])) #m1
-
-  #ordering[,4] <- ordering[,2] #m2
-
-  #ordering[,4] <- ordering[,2]*-1 #m3
-
-
-  #ordering[,4] <- abs(ordering[,2]) #m4
-
-  #m5
-  #resid.ratio <- residuals(nullmodel,type = "martingale") / residuals(model,type="martingale")
-
-  #ordering[,4] <- resid.ratio
-
-  #m6
-  #resid.ratio <- residuals(nullmodel,type="deviance") / residuals(model,type = "deviance") * -1
-  #ordering[,4] <- resid.ratio
-
-
-  #ordering <- ordering[order(-ordering[ ,4]), ]
-  #ordering <- ordering[sample(nrow(ordering)),]
-
-  #m7 log parallel
-  #prediction <- predict(model,type="expected")
-  #nullprediction <- predict(nullmodel,type="expected")
-  #residual <- data[,paste(event)] - exp(-prediction)
-  #nullresid <- data[,paste(event)] - exp(-nullprediction)
-
-  #delta.resid <- residual - nullresid
-  #response <- formula[[2]]
-
-  #if (length(response) == 4){
-  #  event = response[[4]]
-  #} else{
-  #  event = response[[3]]
-  #}
-  #y <- event
-  #ordering <- cbind(index, delta.resid, data[ ,paste(y)])
-  #ordering <- cbind(ordering, (ordering[ ,2] - ordering[ ,3]*2*ordering[ ,2]))
-  #ordering <- cbind(ordering,abs(ordering[,2]))
+  ordering <- cbind(ordering, (ordering[ ,2] - ordering[ ,3] * 2 * ordering[ ,2]))
   ordering <- ordering[order(-ordering[ ,4]), ]
-
-  #ordering <- ordering[order(-ordering[ ,4]), ]
-
-  # status = all.vars(formula(model))[2]
-
-
 
   pval <- anova(model, nullmodel)$'P(>|Chi|)'[2]
   if (is.na(pval)) {
@@ -189,7 +139,8 @@ survivalfragilityinternal <- function(formula, data, covariate, conf.level) {
     point.diagnostics <- paste("No points removed. Covariate already not significant at confidence level", conf.level)
   } else{
     resulting.pval <- pvalues[-1]
-    point.diagnostics <- data[indices, ]
+    removed = ordering[indices,1]
+    point.diagnostics <- data[removed, ]
   }
   point.diagnostics <- cbind(point.diagnostics, resulting.pval)
 
