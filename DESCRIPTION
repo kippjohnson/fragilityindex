@@ -14,7 +14,8 @@ Imports:
     stats,
     survival
 Suggests:
-    knitr
+    knitr,
+    car
 URL: https://github.com/kippjohnson/fragilityindex
 BugReports: https://github.com/kippjohnson/fragilityindex/issues
 VignetteBuilder: knitr

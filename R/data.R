@@ -1,17 +1,3 @@
-#' CNA patient survival
-#' 
-#' A dataset containing ######## data for 276 patients.
-#' The variables are as follows:
-#' 
-#' @format A data frame with 276 rows and 3 variables:
-#' \describe{
-#'   \item{months}{months ##### (0.92--72.01)}
-#'   \item{status}{######## (0,1)}
-#'   \item{strat}{####### (mutated, not_mutated)}
-#'}
-"tcga_genes"
-
-
 #' Heart disease
 #' 
 #' A dataset containing #### data for 302 patients.
@@ -32,6 +18,6 @@
 #'   \item{slope}{#### (1,2,3)}
 #'   \item{ca}{###### (1 to 5)}
 #'   \item{thal}{#### (1 to 4)}
-#'   \item{num}{#### (0,1)}
+#'   \item{num}{#### (0 to 4)}
 #' }
 "heart_disease"

@@ -19,7 +19,7 @@
   \item{slope}{#### (1,2,3)}
   \item{ca}{###### (1 to 5)}
   \item{thal}{#### (1 to 4)}
-  \item{num}{#### (0,1)}
+  \item{num}{#### (0 to 4)}
 }}
 \usage{
 heart_disease

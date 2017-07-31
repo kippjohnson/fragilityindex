@@ -43,7 +43,7 @@ Since a fragile test result is one which could have resulted in a p-value greate
 ### Comparing Function Outputs
 The functions `logisticfragility`, `linearfragility`, and `survivalfragility` return approximations for fragility indices of multivariate regressions. These estimates should not be compared between different model types since each of the functions has a slightly different method of making these approximations. Generally, they search for points which favor the full model over the one missing a covariate and remove these points until the models are not distinguishable at the given confidence level. 
 
-Covariates of similar fragility will yield the lowest fragility indices for logistic models and the highest for Cox P-H regressions in survival analysis. The algorithms for prioritizing points for removal from the dataset are closest to optimal for logistic regressions, while Cox P-H regressions have two response variables, weakening point selection and inflating fragility index values. We recommend comparing fragility index values within models, rather than between models. Oftentimes, differences in sample sizes also make comparisons of fragility between models is relatively meaningless. The most effective ways to use fragility index approximations are described in the sections for each function. The algorithms used to find them are also briefly described. The algorithm for `logisticfragility` is described in detail in the appendix. It can be generalized to understand the other multivariate functions.
+Covariates of similar fragility will yield the lowest fragility indices for logistic models and the highest for Cox P-H regressions in survival analysis. The algorithms for prioritizing points for removal from the dataset are closest to optimal for logistic regressions, while Cox P-H regressions have two response variables, weakening point selection and inflating fragility index values. We recommend comparing fragility index values within models, rather than between models. Oftentimes, differences in sample sizes also make comparisons of fragility between models is relatively meaningless. The most effective ways to use fragility index approximations are described in the sections for each function. The algorithms used to find them are also briefly described. The algorithm for `logisticfragility` is described in the "Multivariate Fragility Index Algorithm" section. It can be generalized to understand the other multivariate functions.
 
 
 ## *fragilityindex* Functions
@@ -198,17 +198,65 @@ The p-value next to the 0 entry for `fragility.index` is the p-value for Fisher'
 revfragility.index(exp_events, control_events, exp_sample, control_sample, verbose = TRUE, conf.level = 0.95)
 ```
 
-#
-## *logisticfragility*
+## Multivariate Fragility Functions
 
+__*logisticfragility(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE)*__  
+__*survivalfragility(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE)*__  
+__*linearfragility(formula, data, covariate = "all.factors.default", conf.level = 0.95, verbose = FALSE)*__
 
+We will be using `logisticfragility` on the `heart_disease` dataset for this example, but the parameters are identical to those of `survivalfragility` and `linearfragility`. One should not compare fragility index outputs between the three multivariate fragility functions (see "Comparing Function Ouputs" section for explanation).
 
-## *linearfragility*
+---
 
-## *survivalfragility*
+The `num` variable reflects heart disease status and is originally in a severity scale from 1-4. For this analysis, we will transform the outcome into a binary 0/1 outcome since `logisticfragility()` passes the formula input to `glm(family="binomial")`.
 
-# Appendix
-## Logistic Model Fragility Index Calculation
+``` {r}
+library(car)
+mydata = heart_disease
+mydata$num <- recode(mydata$num, "1:4=1")
+```
+
+First we perform an initial basic logistic regression. (For `survivalfragility` this must be a formula which can be passed to `coxph()` and for `linearfragility` this must be a formula which can be passed to `lm()`. These formulas should not have interaction terms.)
+
+``` {r}
+formula <- num ~ age + sex+ cp + chol + fbs +thalach + ca
+glmfit <- glm(formula, family = "binomial", data = mydata)
+summary(glmfit)
+```
+
+We can see that `age` and `fbs` are not significant at an alpha of 0.05 so the fragility indices of those covariates will be 0, meaning 0 points must be removed to make them nonsignificant.
+
+``` {r}
+logisticfragility(formula, data = mydata)
+```
+
+Covariates with very low p-values, such as `sex` and `cp` typically will be less fragile than those with p-values close to the threshold, such as `chol`. It only takes removing two points to make `chol` nonsignificant while it takes removing 24 points to do the same for `sex`.
+
+If we only want to know the fragility index of a subset of covariates, we can enter their names, as they are written in the `formula`, into the `covariate` parameter. This will make the function run faster since it will not do unneeded calculations.
+
+```{r}
+logisticfragility(formula, data = mydata, covariate = c("chol", "thalach") )
+```
+
+Since the function works by removing points which are most important in making a covariate significant, it can be valuable to examine the points. We can set `verbose = TRUE` to receive an output including removed points, and the resulting p-values from those removals.
+
+``` {r}
+logisticfragility(formula, data = mydata, covariate = c("fbs", "thalach"), verbose = TRUE)
+```
+
+Note that `fbs` has a fragility index of 0, so the verbose results state that no points were removed. The original p-value for the Likelihood Ratio Test is also returned.
+
+We may wish to do further analysis of the removed points if we notice any trends, such as all of the removed points coming from a single level of a factor. This is especially the case when the covariate we are examining is nominal since the algorithm oftentimes removes all of the points from a single category, until that category no longer exists in the dataset. When this is the case, we would not interpret the conclusion to be particularly fragile unless the probability of including someone from that category is low. When that is the case, the covariate's significance is fragile since random chance can exclude those relevant subjects from the sample.
+
+It would be fair to say that the conclusion of significance is fragile for `chol`, while significance is not fragile for the other covariates examined. If a result is fragile, it may call for replicating the collection of data with a larger sample size.
+
+If we wish to examine fragility at a different alpha, we can set the `conf.level` parameter to `1 - alpha`. The default is `conf.level = 0.95` since an alpha of 0.05 is most common.
+
+Warning: especially for extremely low p-values or large datasets with many covariates, running these functions can take over a minute. For some low p-values, the `survivalfragility` function does not converge. In these cases, warnings are returned.
+
+### Multivariate Fragility Index Algorithm
+
+This section provides an explaination for the method for calculating the fragility index output for the `logisticfragility` function. this method can be generalized for the linear and survival fragility functions.
 
 Simulating bivariate logistic data:
 
@@ -341,6 +389,6 @@ If we run an ANOVA, comparing a model with `Var` and a model without `Var`, we w
 anova(nonsigmodel,nonsignullmodel,test = "LRT")
 ```
 
-##References
+#References
 
 Walsh, Michael, et al. "The Statistical Significance of Randomized Controlled Trial Results Is Frequently Fragile: a Case for a Fragility Index." Journal of Clinical Epidemiology, vol. 67, no. 6, 2014, pp. 622-628., doi: 10.1016/j.jclinepi.2013.10.019.
