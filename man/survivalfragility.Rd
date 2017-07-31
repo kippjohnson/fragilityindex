@@ -24,7 +24,7 @@ verbose is TRUE, returns a list with p-values for each fragility index
 at each iteration of the algorithm.
 }
 \description{
-Compute the fragility of a coefficient in a survival test, i.e. the number of removed observations it would take to make a significant-result non-significant. Uses the coxph() function from the survival package.
+Compute the fragility of a coefficient in a Cox P-H regression for survival analysis, i.e. the number of removed observations it would take to make a significant-result non-significant. Uses the coxph() function from the survival package.
 }
 \examples{
 library(survival); data <- lung

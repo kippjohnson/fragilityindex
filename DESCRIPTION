@@ -13,5 +13,10 @@ License: MIT + file LICENSE
 Imports:
     stats,
     survival
+Suggests:
+    knitr
+URL: https://github.com/kippjohnson/fragilityindex
+BugReports: https://github.com/kippjohnson/fragilityindex/issues
+VignetteBuilder: knitr
 LazyData: TRUE
 RoxygenNote: 6.0.1

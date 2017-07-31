@@ -15,6 +15,11 @@ vignette: >
 *fragilityindex* is a package that implements and extends the fragility index calculation as described in Walsh et al. (2014).
 
 ---
+``` {r, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(collapse=TRUE,comment=NA)
+```
+
 
 # Introduction
 
@@ -204,10 +209,6 @@ revfragility.index(exp_events, control_events, exp_sample, control_sample, verbo
 
 # Appendix
 ## Logistic Model Fragility Index Calculation
-
-``` {r, echo = FALSE}
-knitr::opts_chunk$set(collapse=TRUE,comment=NA)
-```
 
 Simulating bivariate logistic data:
 

@@ -31,6 +31,6 @@ at each iteration of the algorithm.
 Compute the fragility index for a dichotomous outcome, i.e. the number of flipped outcomes between cases and control it would take to make a significant-result non-significant.
 }
 \examples{
-fragility.index(15, 5, 40, 40)
+fragility.index(15, 5, 40, 41, verbose = TRUE)
 
 }
