@@ -340,3 +340,7 @@ If we run an ANOVA, comparing a model with `Var` and a model without `Var`, we w
 ``` {r}
 anova(nonsigmodel,nonsignullmodel,test = "LRT")
 ```
+
+##References
+
+Walsh, Michael, et al. "The Statistical Significance of Randomized Controlled Trial Results Is Frequently Fragile: a Case for a Fragility Index." Journal of Clinical Epidemiology, vol. 67, no. 6, 2014, pp. 622-628., doi: 10.1016/j.jclinepi.2013.10.019.
