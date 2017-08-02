@@ -12,8 +12,23 @@
 #' @importFrom stats complete.cases
 #' @importFrom stats anova
 #' @importFrom stats as.formula
-#'
-#'
+#' 
+#' @examples
+#' # Import example data
+#' ad <- "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
+#' mydata <- read.csv(file = ad, header= TRUE, sep=";")
+#'   
+#' 
+#' formula = quality ~ fixed.acidity + citric.acid + residual.sugar + free.sulfur.dioxide + 
+#'   total.sulfur.dioxide + pH + sulphates + alcohol
+#' linearfragility(formula, data = mydata, covariate = c("citric.acid", 
+#'                 "total.sulfur.dioxide", "free.sulfur.dioxide"))
+#' \donttest{
+#' # citric acid nonsignificant at 197 points removed and 
+#' # residual.sugar is not significant at 0 points removed
+#' linearfragility(quality ~ citric.acid + residual.sugar, data = mydata, verbose = TRUE)
+#' }
+#' 
 #' @return If verbose is FALSE, returns a list with fragility indices for selected covariates. If
 #' verbose is TRUE, returns a list with p-values for each fragility index at each iteration
 #' of the algorithm.
@@ -62,7 +77,6 @@ linearfragilityinternal <- function(formula, data, covariate, conf.level) {
   ordering <- cbind(index, delta.resid, data[ ,paste(y)])
   ordering <- cbind(ordering, ordering[,2])
   ordering <- ordering[order(-ordering[,4]), ]
-  #ordering <- ordering[sample(nrow(ordering)),]
 
   pval <- anova(model, nullmodel, test = "LRT")$`Pr(>Chi)`[2]
   if (is.na(pval)) {
@@ -113,7 +127,8 @@ linearfragilityinternal <- function(formula, data, covariate, conf.level) {
     point.diagnostics <- paste("No points removed. Covariate already not significant at confidence level", conf.level)
   } else{
     resulting.pval <- pvalues[-1]
-    point.diagnostics <- data[indices, ]
+    removed <-  ordering[indices,1]
+    point.diagnostics <- data[removed, ]
   }
   point.diagnostics <- cbind(point.diagnostics, resulting.pval)
 

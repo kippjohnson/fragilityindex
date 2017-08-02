@@ -26,3 +26,20 @@ of the algorithm.
 \description{
 Compute the fragility of a coefficient in a linear regression, i.e. the number of removed observations it would take to make a significant-result non-significant. Uses the lm() function from the stats package.
 }
+\examples{
+# Import example data
+ad <- "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
+mydata <- read.csv(file = ad, header= TRUE, sep=";")
+  
+
+formula = quality ~ fixed.acidity + citric.acid + residual.sugar + free.sulfur.dioxide + 
+  total.sulfur.dioxide + pH + sulphates + alcohol
+linearfragility(formula, data = mydata, covariate = c("citric.acid", 
+                "total.sulfur.dioxide", "free.sulfur.dioxide"))
+\donttest{
+# citric acid nonsignificant at 197 points removed and 
+# residual.sugar is not significant at 0 points removed
+linearfragility(quality ~ citric.acid + residual.sugar, data = mydata, verbose = TRUE)
+}
+
+}

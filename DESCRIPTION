@@ -9,9 +9,17 @@ Description: Implements and extends the fragility index calculation for
     Mrkobrada, Levine, Ribic, Molnar, Dattani, Burke, Guyatt,
     Thabane, Walter, Pogue, and Devereaux (2014)
     <DOI:10.1016/j.jclinepi.2013.10.019>.
+Depends: R (>= 2.10)
 License: MIT + file LICENSE
 Imports:
     stats,
     survival
+Suggests:
+    knitr,
+    car,
+    utils
+URL: https://github.com/kippjohnson/fragilityindex
+BugReports: https://github.com/kippjohnson/fragilityindex/issues
+VignetteBuilder: knitr
 LazyData: TRUE
 RoxygenNote: 6.0.1
