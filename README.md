@@ -1,6 +1,6 @@
 # Repository for the R Package Fragility Index
 
-Kipp Johnson
+Kipp Johnson and Eli Rapoport
 
 Implements and extends the fragility index calculation as described in Walsh M, Srinathan SK, McAuley DF, et al. _The statistical significance of randomized controlled trial results is frequently fragile: a case for a Fragility Index_. Journal of clinical epidemiology. 67(6):622-8. 2014.
 
@@ -77,52 +77,46 @@ This package also contains a function to compute the "reverse fragility index," 
 
 ### Logistic Beta Coefficient Regression Fragility
 
-We present a new method to calculate logistic regression coefficient fragility, or how many events it would take to change a signficiant logistic regression coefficient to non-significant at the given confidence level. To do this, we replace responses (which should be binary events, i.e. 0 or 1) with the opposite event until the coefficient is nonsignificant. If the initial regression coefficient (beta) is positive, we change a 1 event to a 0. If the regression coefficient is negative, we change a 0 event to a 1. 
+We present a new method to calculate logistic regression coefficient fragility, or how many events it would take to change a significant logistic regression coefficient to non-significant at the given confidence level. To do this, we remove responses (which should be binary events, i.e. 0 or 1) until the coefficient is nonsignificant. Responses which support the significance of the coefficient are removed in order of importance. 
 
-We then count the number of times this replacement must be and then obtain a fragility index. To account for variability in the response replacement, we then repeat this process a number of times and take the mean of all of the computed fragility indices to obtain a single fragility index.
+We then count the number of events that must be removed to obtain a fragility index.
 
 Examining fragility of a single covariate:
 
 ~~~~
-mydata <- read.csv("http://www.ats.ucla.edu/stat/data/binary.csv")
-mydata$rank <- factor(mydata$rank)
-logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="gre", niter=100)
+mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
+
+logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="gre")
 ~~~~
 
 Or looking at all covariates in one step:
 
 ~~~
-logisticfragility(admit ~ gre + gpa + rank, data = mydata, covariate="all", niter=100, progress.bar=TRUE)
+logisticfragility(admit ~ gre + gpa + rank, data = mydata)
 ~~~
 
 Example output:
 ~~~
-[1] "Doing (Intercept)..."
-   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed = 15s
-[1] "Doing gre..."
-   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed = 03s
-[1] "Doing gpa..."
-   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed = 08s
-[1] "Doing rank2..."
-   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed = 05s
-[1] "Doing rank3..."
-   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed = 28s
-[1] "Doing rank4..."
-   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed = 28s
-  coefficient fragility.index
-1 (Intercept)           65.05
-2         gre           11.25
-3         gpa           29.65
-4       rank2           19.02
-5       rank3          120.62
-6       rank4          123.35
+$gre
+$gre$fragility.index
+[1] 2
+
+
+$gpa
+$gpa$fragility.index
+[1] 4
+
+
+$rank
+$rank$fragility.index
+[1] 23
 ~~~
 
-### Fragility index for survival analysis
+### Fragility index for survival analysis and linear regression
 
-We also present a new method to calculate fragility index for survival analysis in a similar way to the calculation performed for the 2x2 and logistic regression fragility index calculations. We use the survdiff() function from the survival package in R to compute survival tests from the G-rho family of tests. 
+We also present a new method to calculate fragility index for survival analysis and for linear regressions in a similar way to the calculation performed for the logistic regression fragility index calculations. We use the coxph() function from the survival package in R to compute survival tests from the G-rho family of tests and the lm() function from the stats package in R to compute linear regressions.
 
-For this calculation, we randomly swap a 0/1 (survive/die) outcome in the survival dataset and continue then repeat this process, counting the number of swaps until the survival test is no longer significant. The number of swaps is the fragility index for this single iteration. We repeat this process a number of times and take the average of each resulting fragility index to obtain a more stable result.
+
 
 Example:
 
@@ -131,6 +125,6 @@ library(survival)
 head(lung) # example survival data
 lung$status <- lung$status - 1 # we require 0/1 outcomes; this variable originally is coded as 1/2
 
-survivalfragility(Surv(time, status) ~ pat.karno + strata(inst), data=lung, niter=100, progress.bar = TRUE)
+survivalfragility(Surv(time, status) ~ pat.karno + strata(inst), data=lung, covariate="pat.karno")
 ~~~
 
