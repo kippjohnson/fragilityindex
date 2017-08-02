@@ -25,9 +25,9 @@ knitr::opts_chunk$set(collapse=TRUE,comment=NA)
 
 ## Theory
 
-In randomized controlled trials, our belief in whether a treatment may have a real effect is often influenced by whether hypothesis testing demonstrates statistical significance. In the null hypothesis significance testing framewor, we reject the null hypothesis when the P-value is below a predetermined threshold. Rejecting the null hypothesis implies that the differences between treatment groups are unlikely to have occured due to chance.
+In randomized controlled trials, our belief in whether a treatment may have a real effect is often influenced by whether hypothesis testing demonstrates statistical significance. In the null hypothesis significance testing framework, we reject the null hypothesis when the p-value is below a predetermined threshold. Rejecting the null hypothesis implies that the differences between treatment groups are unlikely to have occured due to chance.
 
-Per Walsh et al. (2014), the use of threshold P-values may be an overly simple concept to determine the existence of a treatment effect. They are limited as a tool since readers may interpret P-values of similar magnitude similarly, regardless of sample size or number of trials. Also, P-values near the threshold value are interpreted very differently, depending on whether they are above or below it.
+Per Walsh et al. (2014), the use of threshold p-values may be an overly simple concept to determine the existence of a treatment effect. They are limited as a tool since readers may interpret p-values of similar magnitude similarly, regardless of sample size or number of trials. Also, p-values near the threshold value are interpreted very differently, depending on whether they are above or below it.
 
 Walsh et al. (2014) suggest the use of an additional metric that demonstrates how easily a significant result can lose statistical signifance as a result of additional events being added to the results. This metric, the fragility index, indicates fragile results with smaller numbers, and non-fragile results with large ones.
 
@@ -43,7 +43,7 @@ Since a fragile test result is one which could have resulted in a p-value greate
 ### Comparing Function Outputs
 The functions `logisticfragility`, `linearfragility`, and `survivalfragility` return approximations for fragility indices of multivariate regressions. These estimates should not be compared between different model types since each of the functions has a slightly different method of making these approximations. Generally, they search for points which favor the full model over the one missing a covariate and remove these points until the models are not distinguishable at the given confidence level. 
 
-Covariates of similar fragility will yield the lowest fragility indices for logistic models and the highest for Cox P-H regressions in survival analysis. The algorithms for prioritizing points for removal from the dataset are closest to optimal for logistic regressions, while Cox P-H regressions have two response variables, weakening point selection and inflating fragility index values. We recommend comparing fragility index values within models, rather than between models. Oftentimes, differences in sample sizes also make comparisons of fragility between models is relatively meaningless. The most effective ways to use fragility index approximations are described in the sections for each function. The algorithms used to find them are also briefly described. The algorithm for `logisticfragility` is described in the "Multivariate Fragility Index Algorithm" section. It can be generalized to understand the other multivariate functions.
+Covariates of similar fragility will yield the lowest fragility indices for logistic models and the highest for Cox P-H regressions in survival analysis. The algorithms for prioritizing points for removal from the dataset are closest to optimal for logistic regressions, while Cox P-H regressions have two response variables, weakening point selection and inflating fragility index values. We recommend comparing fragility index values within models, rather than between models. Oftentimes, differences in sample sizes also make comparisons of fragility between models relatively meaningless. The most effective ways to use fragility index approximations are described in the sections for each function. The algorithms used to find them are also briefly described. The algorithm for `logisticfragility` is described in the "Multivariate Fragility Index Algorithm" section. It can be generalized to understand the other multivariate functions.
 
 
 ## *fragilityindex* Functions
@@ -108,7 +108,7 @@ if (pval < alpha) {
 
 This gives us a p-value of `r pval`, which is `r bool` than our alpha threshold of `r alpha`, indicating that the difference between the control and experimental groups is `r sig`. To check the fragility of this result, we can use the `fragility.index` function.
 
-```{r results="hide",message=FALSE,warning=FALSE}
+```{r}
 fragility <- fragility.index(exp_events, control_events, exp_sample, control_sample, conf.level = 1 - alpha)
 ```
 
@@ -171,7 +171,6 @@ if (pval < alpha) {
 This gives us a p-value of `r pval`, which is `r bool` than our alpha threshold of `r alpha`, indicating that the difference between the control and experimental groups is `r sig`. To check the reverse fragility of this result, we can use the `revfragility.index` function.
 
 ``` {r results="hide",message=FALSE,warning=FALSE}
-library(fragilityindex)
 revfragility <- revfragility.index(exp_events, control_events, exp_sample, control_sample, conf.level = 1 - alpha)
 ```
 
@@ -252,7 +251,7 @@ It would be fair to say that the conclusion of significance is fragile for `chol
 
 If we wish to examine fragility at a different alpha, we can set the `conf.level` parameter to `1 - alpha`. The default is `conf.level = 0.95` since an alpha of 0.05 is most common.
 
-Warning: especially for extremely low p-values or large datasets with many covariates, running these functions can take over a minute. For some low p-values, the `survivalfragility` function does not converge. In these cases, warnings are returned.
+Warning: especially for extremely low p-values or large datasets with many covariates, running these functions can some time. For some low p-values, the `survivalfragility` function does not converge. In these cases, warnings are returned.
 
 ### Multivariate Fragility Index Algorithm
 
@@ -278,7 +277,7 @@ head(mydata)
 model <-  glm(Status ~ Var + Covar, mydata, family = "binomial")
 summary(model)
 ```
-Both covariates are found to be significant at a 95% confidence level. The goal of the `logisticfragility` function is to determine the number of points on must remove to make the covariates nonsignificant at our chosen confidence level. The logistic model generated by `glm` for our data shows a significant relationship between `Var` and `Response`.
+Both covariates are found to be significant at a 95% confidence level. The goal of the `logisticfragility` function is to determine the number of points one must remove to make the covariates nonsignificant at our chosen confidence level. The logistic model generated by `glm` for our data shows a significant relationship between `Var` and `Response`.
 
 ``` {r, echo = FALSE}
 plot(Status ~ Var, data = mydata, xlab = "Var", ylab = "Response", main = "Logistic Model")
@@ -333,7 +332,7 @@ points(case1$Status~case1$Var, col = "green", xlim = c(0,100), ylim = c(0,1), pc
 points(case4$Status~case4$Var, col = "gray", xlim = c(0,100), ylim = c(0,1), pch = 20, cex = 1.5)
 ```
 
-The two lines shown are simplified versions of `model` and `nullmodel`, predicting `Response` using the mean of `Covar` in addition to `Var`. The points are categorized into cases using the unsimplified model so points with values of `Var` near the boundary of `model` = `nullmodel' cannot be predicted simply by observing the plot.  
+The two lines shown are simplified versions of `model` and `nullmodel`, predicting `Response` using the mean of `Covar` in addition to `Var`. The points are categorized into cases using the unsimplified model so points with values of `Var` near the boundary of `model` = `nullmodel` cannot be predicted simply by observing the plot.  
 
 The removal of points in Cases 1 and 4 results in the convergence of `model` and `nullmodel`. The full model has higher predictive power for these points than the model without `Var`. These points can be found by taking the difference in residuals from the two models. 
 Residuals in Cases 1 and 2 are positive while those in Cases 3 and 4 are negative. The residuals of `model` minus the residuals of `nullmodel` are positive in Cases 2 and 4 while those in Cases 1 and 3 are negative. By selecting points where the difference in residuals is negative with `Response` = 1 and where the difference in residuals is positive with `Response` = 0, we can isolate points which lead to a nonsignificant difference in `model` and `nullmodel` by the Likelihood Ratio Test. When selected in order by magnitude of difference in residuals, these two models converge quickly. 
