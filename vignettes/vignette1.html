@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Kipp Johnson and Eli Rapoport" />
+  <title>fragilityindex</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">fragilityindex</h1>
+<h1 class="subtitle">Fragility index for dichotomous and multivariate results</h1>
+<h2 class="author">Kipp Johnson and Eli Rapoport</h2>
+<h3 class="date"><code>r Sys.Date()</code></h3>
+</div>
+<p><em>fragilityindex</em> is a package that implements and extends the fragility index calculation as described in Walsh et al. (2014).</p>
+<h1 id="functions">Functions</h1>
+<p><code>{r results=&quot;hide&quot;,message=FALSE,warning=FALSE} library(fragilityindex)</code> ## <em>fragility.index()</em> <strong><em>fragility.index(intervention_event, control_event, intervention_n, control_n, conf.level=0.95, verbose=FALSE, print.mat=FALSE)</em></strong></p>
+<p>We can use <code>fragility.index</code> to estimate the fragility of hypothesis testing using Pearson's chi-squared test or Fisher's exact test on dichotomous data from two groups.</p>
+<p>The following table presents data for which the fragility index can provide insight. The data is made up of two groups, one which received the experimental treatment, while the other recieved the control treatment. The control treatment group has 5 recorded events with a sample size of 40 individuals and the experimental treatment group has 15 events with a sample size of 41 individuals.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Control</th>
+<th>Experimental</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Events</strong></td>
+<td>5</td>
+<td>15</td>
+</tr>
+<tr class="even">
+<td><strong>Sample Size</strong></td>
+<td>40</td>
+<td>41</td>
+</tr>
+</tbody>
+</table>
+<p>Formatting the data for Chi-squared test:</p>
+<pre class="{r}"><code>control_events &lt;- 5; control_sample &lt;- 40
+exp_events &lt;- 15; exp_sample &lt;- 41
+
+mat &lt;- matrix(c(control_events, exp_events, control_sample - control_events, exp_sample- exp_events), byrow = TRUE, 2, 2)</code></pre>
+<p>First we conduct a Pearson's Chi-squared test at an alpha of 0.05.</p>
+<pre class="{r}"><code>chisq.test(mat)</code></pre>
+<p><code>{r echo=FALSE} alpha &lt;- 0.05 pval &lt;- signif(chisq.test(mat)$p.value,digits = 3) if (pval &lt; alpha) {   bool &lt;- &quot;less&quot;   sig &lt;- &quot;significant&quot; } else{   bool &lt;- &quot;greater&quot;   sig &lt;- &quot;not significant&quot; }</code></p>
+<p>This gives us a p-value of <code>r pval</code>, which is <code>r bool</code> than our alpha threshold of <code>r alpha</code>, indicating that the difference between the control and experimental groups is <code>r sig</code>. To check the fragility of this result, we can use the <code>fragility.index</code> function.</p>
+<pre class="{r}"><code>fragility &lt;- fragility.index(exp_events, control_events, exp_sample, control_sample, conf.level = 1 - alpha)</code></pre>
+<p>A fragility index of <code>r fragility</code> is concerning for a sample size of <code>r control_sample</code>. It means that if <code>r fragility</code> more members of the control group experienced an event, we would have found the groups to not be statistically significantly different. Especially in cases where subjects are lost due to failure to follow-up or other random events which prevent them from being recorded as a success or failure, this is very concerning. To see the changes done to the data, we can set <code>print.mat = TRUE</code>.</p>
+<pre class="{r}"><code>fragility.index(exp_events, control_events, exp_sample, control_sample, print.mat = TRUE)</code></pre>
+<p>The fragility index is stored under <code>$index</code> in a list. We can see the number of events increase by 1 each iteration while the number of non-events decreases by 1. The final matrix printed has nonsignificant differences between the two groups.</p>
+<p>If we want to record the p-value associated with each iteration of flipping a non-event to event, we can set <code>verbose = TRUE</code>. This will cause the function to output p-values for each iteration, up to and including the iteration which makes the groups not significantly different.</p>
+<pre class="{r}"><code>fragility_object = fragility.index(exp_events, control_events, exp_sample, control_sample, verbose = TRUE)
+fragility_object</code></pre>
+<p>The p-value next to the 0 entry for <code>fragility.index</code> is the p-value for Fisher's exact test on the original data. If the two groups are not statistically significantly different at the given confidence level with this test, <code>fragility.index()</code> will return 0 as the fragility index.</p>
+<h2 id="revfragility.index"><em>revfragility.index</em></h2>
+<p><strong><em>revfragility.index(intervention_event, control_event, intervention_n, control_n, conf.level=0.95, verbose=FALSE, print.mat=FALSE)</em></strong></p>
+<p>When hypothesis testing of dichotomous data using Pearson's chi-squared test or Fisher's exact test fails to reject a null hypothesis, we can use <code>revfragility.index</code> to estimate the fragility of the test's conclusion. We use the term &quot;reverse fragility&quot; to refer to the fragility of a nonsignificant result from hypothesis testing.</p>
+<p>The following table presents dichotomous data from two different groups. The control treatment group has 5 recorded events with a sample size of 40 individuals and the experimental treatment group has 15 events with a sample size of 41 individuals.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Control</th>
+<th>Experimental</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Events</strong></td>
+<td>5</td>
+<td>15</td>
+</tr>
+<tr class="even">
+<td><strong>Sample Size</strong></td>
+<td>40</td>
+<td>41</td>
+</tr>
+</tbody>
+</table>
+<p>Formatting the data for Chi-squared test:</p>
+<pre class="{r}"><code>control_events &lt;- 5; control_sample &lt;- 40
+exp_events &lt;- 15; exp_sample &lt;- 41
+
+mat &lt;- matrix(c(control_events, exp_events, control_sample - control_events, exp_sample- exp_events), byrow = TRUE, 2, 2)</code></pre>
+<p>First we conduct a Pearson's Chi-squared test at an alpha of 0.01.</p>
+<pre class="{r}"><code>chisq.test(mat)</code></pre>
+<p>``` {r echo=FALSE} alpha &lt;- 0.01 pval &lt;- signif(chisq.test(mat)$p.value,digits = 3) if (pval &lt; alpha) { bool &lt;- &quot;less&quot; sig &lt;- &quot;significant&quot; } else{ bool &lt;- &quot;greater&quot; sig &lt;- &quot;not significant&quot;</p>
+<p>} ```</p>
+<p>This gives us a p-value of <code>r pval</code>, which is <code>r bool</code> than our alpha threshold of <code>r alpha</code>, indicating that the difference between the control and experimental groups is <code>r sig</code>. To check the reverse fragility of this result, we can use the <code>revfragility.index</code> function.</p>
+<p><code>{r results=&quot;hide&quot;,message=FALSE,warning=FALSE} revfragility &lt;- revfragility.index(exp_events, control_events, exp_sample, control_sample, conf.level = 1 - alpha)</code></p>
+<pre class="{r}"><code>revfragility</code></pre>
+<p>This gives a reverse fragility index of <code>r revfragility</code>. Even though this means that just one flipped outcome would have yielded different results, this is not a particularly concerning reverse fragility index. The <strong>only</strong> conclusion that can be made from such high reverse fragility is that further testing with a much larger sample size could be considered. If looking to repeat data collection, sample size should be increased to avoid Type I error. Especially in cases where subjects are lost, preventing data collection of their outcomes, replication could be considered.</p>
+<p>Similarly to the <code>fragility.index</code> function, we can set <code>print.mat = TRUE</code> to see the changes done to the table of data to simulate a significant result.</p>
+<p>The reverse fragility index is stored under <code>$index</code> in a list.</p>
+<p>If we want to record the p-value associated with each iteration of flipping an event to a non-event, we can set <code>verbose = TRUE</code>. This will cause the function to output p-values for each iteration, up to and including the iteration which makes the groups significantly different.</p>
+<pre class="{r}"><code>fragility_object = revfragility.index(exp_events, control_events, exp_sample, control_sample, verbose = TRUE, conf.level = 1 - alpha)
+fragility_object</code></pre>
+<p>The p-value next to the 0 entry for <code>fragility.index</code> is the p-value for Fisher's exact test on the original data. If the two groups are statistically significantly different at the given confidence level with this test, <code>revfragility.index()</code> will return 0 as the reverse fragility index.</p>
+<pre class="{r}"><code>revfragility.index(exp_events, control_events, exp_sample, control_sample, verbose = TRUE, conf.level = 0.95)</code></pre>
+<h2 id="multivariate-fragility-functions">Multivariate Fragility Functions</h2>
+<p><strong><em>logisticfragility(formula, data, covariate = &quot;all.factors.default&quot;, conf.level = 0.95, verbose = FALSE)</em></strong><br />
+<strong><em>survivalfragility(formula, data, covariate = &quot;all.factors.default&quot;, conf.level = 0.95, verbose = FALSE)</em></strong><br />
+<strong><em>linearfragility(formula, data, covariate = &quot;all.factors.default&quot;, conf.level = 0.95, verbose = FALSE)</em></strong></p>
+<p>We will be using <code>logisticfragility</code> on the <code>heart_disease</code> dataset for this example, but the parameters are identical to those of <code>survivalfragility</code> and <code>linearfragility</code>. One should not compare fragility index outputs between the three multivariate fragility functions (see &quot;Comparing Function Ouputs&quot; section for explanation).</p>
+<hr />
+<p>The <code>num</code> variable reflects heart disease status and is originally in a severity scale from 1-4. For this analysis, we will transform the outcome into a binary 0/1 outcome since <code>logisticfragility()</code> passes the formula input to <code>glm(family=&quot;binomial&quot;)</code>.</p>
+<pre class="{r}"><code>library(car)
+mydata = heart_disease
+mydata$num &lt;- recode(mydata$num, &quot;1:4=1&quot;)</code></pre>
+<p>First we perform an initial logistic regression. (For <code>survivalfragility</code> this must be a formula which can be passed to <code>coxph()</code> and for <code>linearfragility</code> this must be a formula which can be passed to <code>lm()</code>. These formulas should not have interaction terms.)</p>
+<pre class="{r}"><code>formula &lt;- num ~ age + sex+ cp + chol + fbs +thalach + ca
+glmfit &lt;- glm(formula, family = &quot;binomial&quot;, data = mydata)
+summary(glmfit)</code></pre>
+<p>We can see that <code>age</code> and <code>fbs</code> are not significant at an alpha of 0.05 so the fragility indices of those covariates will be 0, meaning 0 points must be removed to make them nonsignificant.</p>
+<pre class="{r}"><code>logisticfragility(formula, data = mydata)</code></pre>
+<p>Covariates with very low p-values, such as <code>sex</code> and <code>cp</code> typically will be less fragile than those with p-values close to the threshold, such as <code>chol</code>. It only takes removing two points to make <code>chol</code> nonsignificant while it takes removing 24 points to do the same for <code>sex</code>.</p>
+<p>If we only want to know the fragility index of a subset of covariates, we can enter their names, as they are written in the <code>formula</code>, into the <code>covariate</code> parameter. This will make the function run faster since it will not do unneeded calculations.</p>
+<pre class="{r}"><code>logisticfragility(formula, data = mydata, covariate = c(&quot;chol&quot;, &quot;thalach&quot;) )</code></pre>
+<p>Since the function works by removing points which are most important in making a covariate significant, it can be valuable to examine the points. We can set <code>verbose = TRUE</code> to receive an output including removed points, and the resulting p-values from those removals.</p>
+<pre class="{r}"><code>logisticfragility(formula, data = mydata, covariate = c(&quot;fbs&quot;, &quot;thalach&quot;), verbose = TRUE)</code></pre>
+<p>Note that <code>fbs</code> has a fragility index of 0, so the verbose results state that no points were removed. The original p-value for the Likelihood Ratio Test is also returned.</p>
+<p>We may wish to do further analysis of the removed points if we notice any trends, such as all of the removed points coming from a single level of a factor. This is especially the case when the covariate we are examining is nominal since the algorithm oftentimes removes all of the points from a single category, until that category no longer exists in the dataset. When this is the case, we would not interpret the conclusion to be particularly fragile unless the probability of including someone from that category is low. When that is the case, the covariate's significance is fragile since random chance can exclude those relevant subjects from the sample.</p>
+<p>It would be fair to say that the conclusion of significance is fragile for <code>chol</code>, while significance is not fragile for the other covariates examined. If a result is fragile, it may call for replicating the collection of data with a larger sample size.</p>
+<p>If we wish to examine fragility at a different alpha, we can set the <code>conf.level</code> parameter to <code>1 - alpha</code>. The default is <code>conf.level = 0.95</code> since an alpha of 0.05 is most common.</p>
+<p>Warning: especially for extremely low p-values or large datasets with many covariates, running these functions can some time. For some low p-values, the <code>survivalfragility</code> function does not converge. In these cases, warnings are returned.</p>
+<h3 id="multivariate-fragility-index-algorithm">Multivariate Fragility Index Algorithm</h3>
+<p>This section provides an explaination for the method for calculating the fragility index output for the <code>logisticfragility</code> function. this method can be generalized for the linear and survival fragility functions.</p>
+<p>Simulating bivariate logistic data:</p>
+<pre class="{r}"><code>
+n &lt;- 100; b0 &lt;- -5; b1 &lt;- .055; b2 &lt;- .2
+x &lt;- runif(n, min = 1, max = 100)
+x2 &lt;- runif(n, min = 1, max = 20)
+pi &lt;- (exp(b0 + b1 * x + b2 * x2)) / (1 + exp(b0 + b1 * x + b2 * x2))
+y &lt;- rbinom(n, 1, pi)
+mydata &lt;- data.frame(x, x2, y)
+names(mydata) &lt;- c(&quot;Var&quot;, &quot;Covar&quot;, &quot;Status&quot;)
+head(mydata)</code></pre>
+<p><br></p>
+<p><code>Status</code> is the response variable and <code>Var</code> and <code>Covar</code> are covariates for our logistic model. Note that <code>Status</code> has dichotomous outcomes.</p>
+<pre class="{r}"><code>model &lt;-  glm(Status ~ Var + Covar, mydata, family = &quot;binomial&quot;)
+summary(model)</code></pre>
+<p>Both covariates are found to be significant at a 95% confidence level. The goal of the <code>logisticfragility</code> function is to determine the number of points one must remove to make the covariates nonsignificant at our chosen confidence level. The logistic model generated by <code>glm</code> for our data shows a significant relationship between <code>Var</code> and <code>Response</code>.</p>
+<p><code>{r, echo = FALSE} plot(Status ~ Var, data = mydata, xlab = &quot;Var&quot;, ylab = &quot;Response&quot;, main = &quot;Logistic Model&quot;) xsim &lt;-  seq(from = 1, to = 100, by = 1) xsim &lt;- sort(rep(xsim,times = 10)) x2sim &lt;- seq(from = 1, to = 20, length.out = 10) x2sim &lt;- rep(x2sim, times = 100) ysim = predict(model, data.frame(Var = xsim, Covar = x2sim), type = &quot;response&quot;) lines(predict(model, data.frame(Var = xsim, Covar = rep(mean(x2sim),length(x2sim))), type = &quot;response&quot;)~xsim)</code></p>
+<p>A model with a nonsignificant p-value for a covariate is one not found to be significantly different from a model without that covariate. We shall call that model <code>nullmodel</code>.</p>
+<pre class="{r}"><code>nullmodel &lt;- glm(Status ~ Covar, mydata, family = &quot;binomial&quot;)
+summary(nullmodel)</code></pre>
+<p><br></p>
+<p>Using the Likelihood Ratio Test, we can see that the two models are significantly different.</p>
+<pre class="{r}"><code>anova(model,nullmodel,test = &quot;LRT&quot;)</code></pre>
+<p><br></p>
+<p>Rather than removing points randomly, it is possible to isolate points which favor the complete model with the covariate over the model without it. There are four cases we can sort all of the points into:</p>
+<ol style="list-style-type: decimal">
+<li>Points with <code>Response = 1</code> at values of <code>Var</code> where <code>model</code> predicts a higher probability than <code>nullmodel</code>.</li>
+<li>Points with <code>Response = 1</code> at values of <code>Var</code> where <code>model</code> predicts a lower probability than <code>nullmodel</code>.</li>
+<li>Points with <code>Response = 0</code> at values of <code>Var</code> where <code>model</code> predicts a higher probability than <code>nullmodel</code>.</li>
+<li>Points with <code>Response = 0</code> at values of <code>Var</code> where <code>model</code> predicts a lower probability than <code>nullmodel</code>.</li>
+</ol>
+<p><code>{r, echo = FALSE} plot(Status ~ Var, data = mydata, xlab = &quot;Var&quot;, ylab = &quot;Response&quot;, main = &quot;Logistic Model&quot;,type = &quot;n&quot;) ysim = predict(model, data.frame(Var = xsim, Covar = x2sim), type = &quot;response&quot;) lines(predict(model, data.frame(Var = xsim, Covar = rep(mean(x2sim),length(x2sim))), type = &quot;response&quot;)~xsim, col = &quot;red&quot;, lwd = 3) lines(rep(mean(predict(nullmodel, data.frame(Covar = x2sim), type = &quot;response&quot;)),length(xsim)) ~ xsim, col = &quot;blue&quot; , lwd = 3) legend(&quot;right&quot;,legend = c(&quot;Model&quot;, &quot;Null Model&quot;), col = c(&quot;red&quot;,&quot;blue&quot;),lty=c(1,1),lwd = c(3,3)) legend(&quot;left&quot;,title = &quot;Case&quot;, legend = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;), col = c(&quot;green&quot;,&quot;purple&quot;,&quot;orange&quot;,&quot;gray&quot;),pch = 20, cex = 1.5) case12 = mydata[which(mydata$Status==1),] case34 = mydata[which(mydata$Status==0),] case12$modelpred = predict(model,case12, type = &quot;response&quot;) case12$nullpred = predict(nullmodel, case12, type=&quot;response&quot;) case34$modelpred = predict(model,case34, type = &quot;response&quot;) case34$nullpred = predict(nullmodel, case34, type=&quot;response&quot;) case1 = case12[which(case12$modelpred &gt; case12$nullpred),] case2 = case12[which(case12$modelpred &lt; case12$nullpred),] case3 = case34[which(case34$modelpred &gt; case34$nullpred),] case4 = case34[which(case34$modelpred &lt; case34$nullpred),] points(case2$Status~case2$Var, col = &quot;purple&quot;, xlim = c(0,100), ylim = c(0,1), pch = 20, cex = 1.5) points(case3$Status~case3$Var, col = &quot;orange&quot;, xlim = c(0,100), ylim = c(0,1), pch = 20, cex = 1.5) points(case1$Status~case1$Var, col = &quot;green&quot;, xlim = c(0,100), ylim = c(0,1), pch = 20, cex = 1.5) points(case4$Status~case4$Var, col = &quot;gray&quot;, xlim = c(0,100), ylim = c(0,1), pch = 20, cex = 1.5)</code></p>
+<p>The two lines shown are simplified versions of <code>model</code> and <code>nullmodel</code>, predicting <code>Response</code> using the mean of <code>Covar</code> in addition to <code>Var</code>. The points are categorized into cases using the unsimplified model so points with values of <code>Var</code> near the boundary of <code>model</code> = <code>nullmodel</code> cannot be predicted simply by observing the plot.</p>
+<p>The removal of points in Cases 1 and 4 results in the convergence of <code>model</code> and <code>nullmodel</code>. The full model has higher predictive power for these points than the model without <code>Var</code>. These points can be found by taking the difference in residuals from the two models. Residuals in Cases 1 and 2 are positive while those in Cases 3 and 4 are negative. The residuals of <code>model</code> minus the residuals of <code>nullmodel</code> are positive in Cases 2 and 4 while those in Cases 1 and 3 are negative. By selecting points where the difference in residuals is negative with <code>Response</code> = 1 and where the difference in residuals is positive with <code>Response</code> = 0, we can isolate points which lead to a nonsignificant difference in <code>model</code> and <code>nullmodel</code> by the Likelihood Ratio Test. When selected in order by magnitude of difference in residuals, these two models converge quickly.</p>
+<p>Using this method, the <code>logisticfragility</code> function returns that removing <code>r logisticfragility(Status~Var+Covar,mydata)$Var$fragility.index</code> points can lead to a model in which <code>Var</code> is not statistically significant.</p>
+<p>It must be remembered that the removal of points will inevitable lead to a model being found to have nonsignificant covariates, regardless of the points that are selected. This algorithm attempts to find the fastest path to this result.</p>
+<pre class="{r}"><code>logisticfragility(Status ~ Var + Covar, mydata)</code></pre>
+<p>The points removed with this method, and the resulting p-value after removing each point are:</p>
+<pre class="{r}"><code>verboseresults &lt;- logisticfragility(Status ~ Var + Covar, covariate = &quot;Var&quot;, mydata, verbose = TRUE)
+verboseresults
+</code></pre>
+<p>The points selected for removal are identified in red on this scatterplot.</p>
+<p><code>{r, echo = FALSE} points = verboseresults$Var$point.diagnostics$Var removed = verboseresults$Var$point.diagnostics[,1:3] plot(Status ~ Var, data = mydata, xlab = &quot;Var&quot;, ylab = &quot;Response&quot;, main = &quot;Logistic Model&quot;) points(removed$Status~removed$Var, col = &quot;red&quot;, xlim = c(0,100), ylim = c(0,1), pch = 19) legend(&quot;right&quot;, legend = &quot;Removed Points&quot;, col = &quot;red&quot;, pch = 19)</code></p>
+<p>The new model fit to the perturbed data is <code>nonsigmodel</code> while the new null model is <code>nonsignullmodel</code>. <code>Var</code> is no longer statistically significant while <code>Covar</code> is, since points which demonstrate <code>Var</code>'s explanatory effect on variation within <code>Response</code> have been removed.</p>
+<pre class="{r}"><code>newdata = mydata[ ! mydata$Var %in% points, ]
+nonsigmodel &lt;-  glm(Status ~ Var + Covar, newdata, family = &quot;binomial&quot;)
+nonsignullmodel &lt;- glm(Status ~ Covar, newdata, family = &quot;binomial&quot;)
+summary(nonsigmodel)</code></pre>
+<p>It can be seen that these models have converged.</p>
+<p><code>{r, echo = FALSE} plot(Status ~ Var, data = newdata, xlab = &quot;Var&quot;, ylab = &quot;Response&quot;, main = &quot;Logistic Model&quot;) ordereddata = newdata[order(newdata$Var),] lines(predict(nonsigmodel, data.frame(Var = ordereddata$Var, Covar = rep(mean(ordereddata$Covar),nrow(ordereddata))), type = &quot;response&quot;) ~ ordereddata$Var, col = &quot;red&quot;, lwd = 3) lines(rep(mean(predict(nonsignullmodel, data.frame(Covar = ordereddata$Covar), type = &quot;response&quot;)),nrow(ordereddata)) ~ ordereddata$Var, col = &quot;blue&quot;,lwd = 3) legend(&quot;bottom&quot;,legend = c(&quot;Model&quot;, &quot;Null Model&quot;), col = c(&quot;red&quot;,&quot;blue&quot;),lty=c(1,1),lwd = c(3,3))</code></p>
+<p>If we run an ANOVA, comparing a model with <code>Var</code> and a model without <code>Var</code>, we will find that <code>Var</code> is no longer statistically significant after the data perturbation.</p>
+<pre class="{r}"><code>anova(nonsigmodel,nonsignullmodel,test = &quot;LRT&quot;)</code></pre>
+<h1 id="references">References</h1>
+<p>Walsh, Michael, et al. &quot;The Statistical Significance of Randomized Controlled Trial Results Is Frequently Fragile: a Case for a Fragility Index.&quot; Journal of Clinical Epidemiology, vol. 67, no. 6, 2014, pp. 622-628., doi: 10.1016/j.jclinepi.2013.10.019.</p>
+</body>
+</html>
