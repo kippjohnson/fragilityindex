@@ -14,19 +14,21 @@
 #' @importFrom stats as.formula
 #' 
 #' @examples
-#' # Import example ata
-#' mydata <- read.csv(header= TRUE, sep=";",
-#'   https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv")
+#' # Import example data
+#' ad <- "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
+#' mydata <- read.csv(file = ad, header= TRUE, sep=";")
+#'   
 #' 
 #' formula = quality ~ fixed.acidity + citric.acid + residual.sugar + free.sulfur.dioxide + 
 #'   total.sulfur.dioxide + pH + sulphates + alcohol
 #' linearfragility(formula, data = mydata, covariate = c("citric.acid", 
 #'                 "total.sulfur.dioxide", "free.sulfur.dioxide"))
-#' 
+#' \donttest{
 #' # citric acid nonsignificant at 197 points removed and 
 #' # residual.sugar is not significant at 0 points removed
 #' linearfragility(quality ~ citric.acid + residual.sugar, data = mydata, verbose = TRUE)
-#'
+#' }
+#' 
 #' @return If verbose is FALSE, returns a list with fragility indices for selected covariates. If
 #' verbose is TRUE, returns a list with p-values for each fragility index at each iteration
 #' of the algorithm.
