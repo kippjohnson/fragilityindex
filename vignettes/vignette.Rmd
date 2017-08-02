@@ -25,18 +25,18 @@ knitr::opts_chunk$set(collapse=TRUE,comment=NA)
 
 ## Theory
 
-In randomized controlled trials, our belief in whether a treatment may have a real effect is often influenced by whether hypothesis testing demonstrates statistical significance. Typically, hypothesis testing rejects the null hypothesis when the P-value is below a predetermined threshold. Rejecting the null hypothesis suggests that the differences between treatment groups are unlikely to have occured due to chance.
+In randomized controlled trials, our belief in whether a treatment may have a real effect is often influenced by whether hypothesis testing demonstrates statistical significance. In the null hypothesis significance testing framewor, we reject the null hypothesis when the P-value is below a predetermined threshold. Rejecting the null hypothesis implies that the differences between treatment groups are unlikely to have occured due to chance.
 
 Per Walsh et al. (2014), the use of threshold P-values may be an overly simple concept to determine the existence of a treatment effect. They are limited as a tool since readers may interpret P-values of similar magnitude similarly, regardless of sample size or number of trials. Also, P-values near the threshold value are interpreted very differently, depending on whether they are above or below it.
 
 Walsh et al. (2014) suggest the use of an additional metric that demonstrates how easily a significant result can lose statistical signifance as a result of additional events being added to the results. This metric, the fragility index, indicates fragile results with smaller numbers, and non-fragile results with large ones.
 
-The fragility index estimates how fragile statistical results are to small perturbations in event outcomes. This package implements an extension to the fragility index calculation for dichotomous results that can be used to estimate the fragility of statistical significance of predictors in linear, logistic, and Cox P-H (survival analysis) regression models.
+The fragility index estimates how fragile statistical results are to small perturbations in event outcomes. This package implements an extension to the fragility index calculation for dichotomous results that can be used to estimate the fragility of statistical significance of predictors in linear, logistic, and Cox proportional hazards (survival analysis) regression models.
 
 ## Multivariate Fragility
 
 ### Concept
-Potential covariates for multivariate regressions are often assessed for significant effects using hypothesis testing. This allows the concept of the fragility index to be extended to models. However, since the majority of data does not have dichotomous outcomes, we cannot simply flip outcomes like the fragility index proposed by Walsh et al. (2014) calls for. Even for models with dichotomous outcomes, such as those used in survival analysis, specific event outcomes are associated with specific survival times and cannot be simply permuted.
+Potential covariates for multivariate regressions are often assessed for significant effects using hypothesis testing with the Wald t test. This allows the concept of the fragility index to be extended to models. However, since the majority of data does not have dichotomous outcomes, we cannot simply flip outcomes like the fragility index proposed by Walsh et al. (2014) calls for. Even for models with dichotomous outcomes, such as those used in survival analysis, specific event outcomes are associated with specific survival times and cannot be simply permuted.
 
 Since a fragile test result is one which could have resulted in a p-value greater than alpha with slight dataset perturbation, the fragility index of a covariate in a multivariate regression can be defined as the minimum number of points one must remove before a model with that covariate is not significantly different from a model without that covariate.
 
@@ -216,7 +216,7 @@ mydata = heart_disease
 mydata$num <- recode(mydata$num, "1:4=1")
 ```
 
-First we perform an initial basic logistic regression. (For `survivalfragility` this must be a formula which can be passed to `coxph()` and for `linearfragility` this must be a formula which can be passed to `lm()`. These formulas should not have interaction terms.)
+First we perform an initial logistic regression. (For `survivalfragility` this must be a formula which can be passed to `coxph()` and for `linearfragility` this must be a formula which can be passed to `lm()`. These formulas should not have interaction terms.)
 
 ``` {r}
 formula <- num ~ age + sex+ cp + chol + fbs +thalach + ca
